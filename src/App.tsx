@@ -22,11 +22,11 @@ import { CheckoutPage } from './components/CheckoutPage';
 import { AuthModal } from './components/AuthModal';
 import { AuthProvider } from './context/AuthContext';
 import { Footer } from './components/Footer';
-import { PRODUCTS, REELS_DATA, createProductSlug, getProductBySlug } from './data/products';
+import { PRODUCTS, REELS_DATA, CATEGORIES, createProductSlug, getProductBySlug } from './data/products';
 import { Product, CartItem, OrderDetails } from './types/store';
 
 // Instruction 1: Increment frontend version number in header after every change/update
-const FRONTEND_VERSION = 'v1.5.1';
+const FRONTEND_VERSION = 'v1.5.2';
 
 export default function App() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -428,6 +428,7 @@ export default function App() {
 
               {/* 4. Shop By Category */}
               <CategoryShowcase
+                categories={CATEGORIES}
                 selectedCategory={selectedCategory}
                 onSelectCategory={(cat) => setSelectedCategory(cat)}
               />

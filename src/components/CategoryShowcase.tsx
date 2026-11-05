@@ -9,9 +9,9 @@ interface CategoryShowcaseProps {
 export const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({
   selectedCategory,
   onSelectCategory,
-  categories: dynamicCategories,
+  categories: dynamicCategories = [],
 }) => {
-  const categories = dynamicCategories.filter(c => c.id !== 'all');
+  const categories = (dynamicCategories || []).filter(c => c.id !== 'all');
 
   return (
     <section className="py-12 md:py-16 bg-[#fcf5eb] border-b border-[#e9dcce]">

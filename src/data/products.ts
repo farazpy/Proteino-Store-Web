@@ -2,12 +2,54 @@ import { Product, ReelItem } from '../types/store';
 
 export const CATEGORIES = [
   { id: 'all', name: 'All Products', icon: '✨' },
-  { id: 'Peanut Butter', name: 'Peanut Butter', icon: '🥜' },
-  { id: 'Protein Powder', name: 'Protein Powder', icon: '🥤' },
-  { id: 'Protein Oats', name: 'Protein Oats', icon: '🥣' },
-  { id: 'Masala Oats', name: 'Masala Oats', icon: '🍲' },
-  { id: 'Super Bar', name: 'Super Bar', icon: '🍫' },
-  { id: 'Super Muesli', name: 'Super Muesli', icon: '🥣' },
+  { 
+    id: 'Peanut Butter', 
+    name: 'Peanut Butter', 
+    icon: '🥜', 
+    image: 'https://images.unsplash.com/photo-1588791174744-7e9bf4378277?auto=format&fit=crop&w=400&q=80',
+    bgTone: 'bg-[#fffbeb]',
+    badge: 'Pure & Bold'
+  },
+  { 
+    id: 'Protein Powder', 
+    name: 'Protein Powder', 
+    icon: '🥤', 
+    image: 'https://images.unsplash.com/photo-1579722821273-0f6c7d44362f?auto=format&fit=crop&w=400&q=80',
+    bgTone: 'bg-[#f0fdf4]',
+    badge: '26g Protein'
+  },
+  { 
+    id: 'Protein Oats', 
+    name: 'Protein Oats', 
+    icon: '🥣', 
+    image: 'https://images.unsplash.com/photo-1586444248902-2f64eddc13df?auto=format&fit=crop&w=400&q=80',
+    bgTone: 'bg-[#fdf2f8]',
+    badge: 'Super Seeds'
+  },
+  { 
+    id: 'Masala Oats', 
+    name: 'Masala Oats', 
+    icon: '🍲', 
+    image: 'https://images.unsplash.com/photo-1517673132405-a56a62b18caf?auto=format&fit=crop&w=400&q=80',
+    bgTone: 'bg-[#fefce8]',
+    badge: '2-Min Desi'
+  },
+  { 
+    id: 'Super Bar', 
+    name: 'Super Bar', 
+    icon: '🍫', 
+    image: '/images/super-bar-card.png',
+    bgTone: 'bg-[#ecfeff]',
+    badge: 'On-the-Go'
+  },
+  { 
+    id: 'Super Muesli', 
+    name: 'Super Muesli', 
+    icon: '🥣', 
+    image: 'https://images.unsplash.com/photo-1517456793572-1d8efd6dc135?auto=format&fit=crop&w=400&q=80',
+    bgTone: 'bg-[#f5f3ff]',
+    badge: '40% Nuts'
+  },
 ];
 
 export const createProductSlug = (name: string): string => {
