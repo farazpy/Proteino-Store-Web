@@ -1,0 +1,142 @@
+import React from 'react';
+
+interface CategoryShowcaseProps {
+  selectedCategory: string;
+  onSelectCategory: (cat: string) => void;
+}
+
+export const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({
+  selectedCategory,
+  onSelectCategory,
+}) => {
+  const categories = [
+    {
+      id: 'Protein Powder',
+      name: 'Protein Powder',
+      image: 'https://images.unsplash.com/photo-1579722821273-0f6c7d44362f?auto=format&fit=crop&w=300&q=80',
+      badge: '26g Protein',
+      bgTone: 'bg-[#faf3e8]',
+    },
+    {
+      id: 'Protein Oats',
+      name: 'Protein Oats',
+      image: 'https://images.unsplash.com/photo-1586444248902-2f64eddc13df?auto=format&fit=crop&w=300&q=80',
+      badge: '27g Protein',
+      bgTone: 'bg-[#f4ecdf]',
+    },
+    {
+      id: 'Masala Oats',
+      name: 'Masala Oats',
+      image: 'https://images.unsplash.com/photo-1517673132405-a56a62b18caf?auto=format&fit=crop&w=300&q=80',
+      badge: '2 Min Meal',
+      bgTone: 'bg-[#fbf1e4]',
+    },
+    {
+      id: 'Peanut Butter',
+      name: 'Peanut Butter',
+      image: 'https://images.unsplash.com/photo-1588791174744-7e9bf4378277?auto=format&fit=crop&w=300&q=80',
+      badge: '100% Peanuts',
+      bgTone: 'bg-[#faefe1]',
+    },
+    {
+      id: 'Super Bar',
+      name: 'Super Bar',
+      image: 'https://images.unsplash.com/photo-1622484216835-156372c3d596?auto=format&fit=crop&w=300&q=80',
+      badge: '15g Clean Fuel',
+      bgTone: 'bg-[#f3ebe1]',
+    },
+    {
+      id: 'Super Muesli',
+      name: 'Super Muesli',
+      image: 'https://images.unsplash.com/photo-1517456793572-1d8efd6dc135?auto=format&fit=crop&w=300&q=80',
+      badge: '40% Nuts & Berries',
+      bgTone: 'bg-[#f8f1ea]',
+    },
+  ];
+
+  return (
+    <section className="py-12 md:py-16 bg-[#fcf5eb] border-b border-[#e9dcce]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Section Heading matching reference image: green Fredoka all-caps */}
+        <div className="text-center mb-10">
+          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-[#00632d] uppercase">
+            SHOP BY CATEGORY
+          </h2>
+          <p className="text-sm sm:text-base text-[#6d604d] mt-2 max-w-xl mx-auto">
+            Choose from our clean, slow-roasted, preservative-free high-protein staples
+          </p>
+        </div>
+
+        {/* Circular Categories Grid matching visual design in attachment */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6 md:gap-8 justify-items-center">
+          {categories.map((cat) => {
+            const isSelected = selectedCategory === cat.id;
+            return (
+              <button
+                key={cat.id}
+                onClick={() => {
+                  onSelectCategory(cat.id);
+                  const el = document.getElementById('products-gallery');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className={`group flex flex-col items-center text-center cursor-pointer transition-all duration-300 w-full max-w-[170px] ${
+                  isSelected ? 'scale-105' : 'hover:-translate-y-1'
+                }`}
+              >
+                {/* Circular dish wrapper */}
+                <div
+                  className={`relative w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full p-2.5 transition-all shadow-md group-hover:shadow-xl ${
+                    cat.bgTone
+                  } ${
+                    isSelected
+                      ? 'ring-4 ring-[#00632d] ring-offset-2 shadow-lg'
+                      : 'border-2 border-[#e3d5c2] group-hover:border-[#00632d]'
+                  }`}
+                >
+                  <div className="w-full h-full rounded-full overflow-hidden bg-white shadow-inner">
+                    <img
+                      src={cat.image}
+                      alt={cat.name}
+                      referrerPolicy="no-referrer"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                  </div>
+
+                  {/* Subtle Badge */}
+                  <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-[#00632d] text-white text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap shadow-sm">
+                    {cat.badge}
+                  </div>
+                </div>
+
+                {/* Category Label */}
+                <span
+                  className={`mt-4 font-display text-base sm:text-lg font-bold tracking-tight transition-colors ${
+                    isSelected ? 'text-[#00632d]' : 'text-[#2b2417] group-hover:text-[#00632d]'
+                  }`}
+                >
+                  {cat.name}
+                </span>
+
+                <span className="text-[11px] text-[#7d705c] mt-0.5">
+                  Explore items →
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Filter reset helper if filtered */}
+        {selectedCategory !== 'all' && (
+          <div className="text-center mt-8">
+            <button
+              onClick={() => onSelectCategory('all')}
+              className="text-xs font-bold text-[#00632d] underline hover:text-[#004d23] transition-colors"
+            >
+              Showing category: "{selectedCategory}" · Click to show all products
+            </button>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+};

@@ -1,0 +1,6 @@
+{
+  "name": "Theproteino Store",
+  "description": "High-protein peanut butter, oats, and superfoods e-commerce store with clean product gallery, comparison matrix, reels showcase, and seamless checkout.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

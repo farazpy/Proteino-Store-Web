@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Fredoka", cursive, sans-serif;
+  --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
+  
+  --color-brand-green: #00632d;
+  --color-brand-green-dark: #014c23;
+  --color-brand-green-light: #05823c;
+  --color-brand-lime: #8ee000;
+  --color-brand-yellow: #ffc400;
+  --color-brand-cream: #fbf6ee;
+  --color-brand-peach: #fcefe1;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #fbf7f0;
+  color: #1a221b;
+  overflow-x: hidden;
+}
+
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+/* Custom scrollbar for sleek galleries */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1ebd8;
+}
+::-webkit-scrollbar-thumb {
+  background: #c7beab;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #00632d;
+}
