@@ -26,7 +26,7 @@ import { createProductSlug } from './data/products';
 import { Product, ReelItem, CartItem, OrderDetails } from './types/store';
 
 // Instruction 1: Increment frontend version number in header after every change/update
-const FRONTEND_VERSION = 'v1.5.3';
+const FRONTEND_VERSION = 'v1.5.4';
 
 export default function App() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -101,22 +101,30 @@ export default function App() {
           fetch('/api/reels'),
           fetch('/api/categories')
         ]);
+
+        if (!pRes.ok || !rRes.ok || !cRes.ok) {
+          throw new Error('One or more API requests failed. Ensure backend server is running and updated.');
+        }
+
         const [pData, rData, cData] = await Promise.all([
           pRes.json(),
           rRes.json(),
           cRes.json()
         ]);
+        
         setProducts(pData);
         setReels(rData);
         setCategories([{ id: 'all', name: 'All Products', icon: '✨' }, ...cData]);
       } catch (err) {
         console.error('Error fetching dynamic data from MySQL:', err);
+        // Fallback or better error display could go here
       } finally {
         setIsLoading(false);
       }
     };
     fetchData();
   }, []);
+
 
   // Sync cart and wishlist with localStorage
   useEffect(() => {
