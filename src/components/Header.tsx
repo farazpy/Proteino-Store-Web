@@ -12,8 +12,6 @@ interface HeaderProps {
   onOpenSearch: () => void;
   wishlistCount: number;
   onOpenWishlist: () => void;
-  categories: any[];
-  megaMenuProducts: Product[];
   onOpenAuth?: () => void;
   onNavigateToEssentials?: () => void;
   onNavigateToAbout?: () => void;
@@ -31,8 +29,6 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenSearch,
   wishlistCount,
   onOpenWishlist,
-  categories,
-  megaMenuProducts,
   onOpenAuth,
   onNavigateToEssentials,
   onNavigateToAbout,
@@ -45,6 +41,19 @@ export const Header: React.FC<HeaderProps> = ({
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
 
   const megaMenuRef = useRef<HTMLDivElement>(null);
+
+  // Categories list
+  const categoriesList = [
+    { name: 'Peanut Butter', icon: '🥜', count: '4 Items', desc: '100% Bold Roasted Peanuts' },
+    { name: 'Protein Powder', icon: '🥤', count: '2 Items', desc: '26g Cold Brew Arabica' },
+    { name: 'Protein Oats', icon: '🥣', count: '2 Items', desc: 'Dark Choco & Super Seeds' },
+    { name: 'Masala Oats', icon: '🍲', count: '2 Items', desc: '2-Min Desi Tadka Oats' },
+    { name: 'Super Bar', icon: '🍫', count: '1 Item', desc: '15g Clean On-the-Go Fuel' },
+    { name: 'Super Muesli', icon: '🥣', count: '1 Item', desc: '40% Nuts & Berries' },
+  ];
+
+  // Featured bestseller products for Mega Menu
+  const megaMenuProducts = PRODUCTS.slice(0, 3);
 
   // Close menus when clicking outside
   useEffect(() => {
@@ -104,10 +113,6 @@ export const Header: React.FC<HeaderProps> = ({
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }
               }}
-              onMouseEnter={() => {
-                setMegaMenuOpen(false);
-                setCategoryDropdownOpen(false);
-              }}
               className="hover:text-[#00632d] transition-colors py-2 whitespace-nowrap shrink-0 cursor-pointer relative group"
             >
               Home
@@ -117,10 +122,7 @@ export const Header: React.FC<HeaderProps> = ({
             {/* 2. Shop with Mega Menu Dropdown Trigger */}
             <div
               className="relative"
-              onMouseEnter={() => {
-                setMegaMenuOpen(true);
-                setCategoryDropdownOpen(false);
-              }}
+              onMouseEnter={() => setMegaMenuOpen(true)}
             >
               <button
                 onClick={() => setMegaMenuOpen(!megaMenuOpen)}
@@ -137,10 +139,7 @@ export const Header: React.FC<HeaderProps> = ({
             {/* 3. Categories Dropdown */}
             <div
               className="relative"
-              onMouseEnter={() => {
-                setCategoryDropdownOpen(true);
-                setMegaMenuOpen(false);
-              }}
+              onMouseEnter={() => setCategoryDropdownOpen(true)}
             >
               <button
                 onClick={() => setCategoryDropdownOpen(!categoryDropdownOpen)}
@@ -172,11 +171,11 @@ export const Header: React.FC<HeaderProps> = ({
                     <span>✨ All Products</span>
                     <span className="text-[10px] text-[#8a7a66]">9 SKUs</span>
                   </button>
-                  {categories.map((c) => (
+                  {categoriesList.map((c) => (
                     <button
-                      key={c.id}
+                      key={c.name}
                       onClick={() => {
-                        onSelectCategory(c.id);
+                        onSelectCategory(c.name);
                         setCategoryDropdownOpen(false);
                         if (onNavigateToHome) onNavigateToHome();
                         const el = document.getElementById('products-gallery');
@@ -185,6 +184,7 @@ export const Header: React.FC<HeaderProps> = ({
                       className="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-[#1a221b] hover:bg-[#eaf4ec] hover:text-[#00632d] transition-colors flex items-center justify-between"
                     >
                       <span>{c.icon} {c.name}</span>
+                      <span className="text-[10px] text-[#8a7a66]">{c.count}</span>
                     </button>
                   ))}
                 </div>
@@ -195,10 +195,6 @@ export const Header: React.FC<HeaderProps> = ({
             {onNavigateToEssentials && (
               <button
                 onClick={onNavigateToEssentials}
-                onMouseEnter={() => {
-                  setMegaMenuOpen(false);
-                  setCategoryDropdownOpen(false);
-                }}
                 className="text-[#00632d] bg-[#eaf4ec] hover:bg-[#d8eedd] px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap shrink-0 flex items-center gap-1 cursor-pointer"
               >
                 <Sparkles className="w-3.5 h-3.5" />
@@ -210,10 +206,6 @@ export const Header: React.FC<HeaderProps> = ({
             {onNavigateToAbout && (
               <button
                 onClick={onNavigateToAbout}
-                onMouseEnter={() => {
-                  setMegaMenuOpen(false);
-                  setCategoryDropdownOpen(false);
-                }}
                 className="hover:text-[#00632d] transition-colors py-2 whitespace-nowrap shrink-0 cursor-pointer relative group"
               >
                 About
@@ -225,10 +217,6 @@ export const Header: React.FC<HeaderProps> = ({
             {onNavigateToContact && (
               <button
                 onClick={onNavigateToContact}
-                onMouseEnter={() => {
-                  setMegaMenuOpen(false);
-                  setCategoryDropdownOpen(false);
-                }}
                 className="hover:text-[#00632d] transition-colors py-2 whitespace-nowrap shrink-0 cursor-pointer relative group"
               >
                 Contact
@@ -321,11 +309,11 @@ export const Header: React.FC<HeaderProps> = ({
                   <span>Browse Collections</span>
                 </div>
                 <div className="space-y-2">
-                  {categories.map((cat) => (
+                  {categoriesList.map((cat) => (
                     <button
-                      key={cat.id}
+                      key={cat.name}
                       onClick={() => {
-                        onSelectCategory(cat.id);
+                        onSelectCategory(cat.name);
                         setMegaMenuOpen(false);
                         if (onNavigateToHome) onNavigateToHome();
                         const el = document.getElementById('products-gallery');
@@ -339,9 +327,10 @@ export const Header: React.FC<HeaderProps> = ({
                           <div className="text-xs font-bold text-[#1a221b] group-hover:text-[#00632d]">
                             {cat.name}
                           </div>
-                          <div className="text-[10px] text-[#786b59]">{cat.description}</div>
+                          <div className="text-[10px] text-[#786b59]">{cat.desc}</div>
                         </div>
                       </div>
+                      <span className="text-[10px] font-mono text-[#8a7a66]">{cat.count}</span>
                     </button>
                   ))}
                 </div>
@@ -521,11 +510,11 @@ export const Header: React.FC<HeaderProps> = ({
               <div className="px-4 py-1 text-xs font-bold uppercase text-[#7d705c] mt-1">
                 Categories
               </div>
-              {categories.map((cat) => (
+              {categoriesList.map((cat) => (
                 <button
-                  key={cat.id}
+                  key={cat.name}
                   onClick={() => {
-                    onSelectCategory(cat.id);
+                    onSelectCategory(cat.name);
                     setMobileMenuOpen(false);
                     if (onNavigateToHome) onNavigateToHome();
                     const el = document.getElementById('products-gallery');
@@ -534,6 +523,7 @@ export const Header: React.FC<HeaderProps> = ({
                   className="px-6 py-2 text-left font-semibold text-xs text-[#2c2417] hover:bg-[#efe7d5] rounded-lg transition-colors flex items-center justify-between"
                 >
                   <span>{cat.icon} {cat.name}</span>
+                  <span className="text-[10px] text-[#8a7b68]">{cat.count}</span>
                 </button>
               ))}
 

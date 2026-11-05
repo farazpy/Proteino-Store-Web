@@ -90,12 +90,3 @@ export interface UserProfile {
   addresses?: ShippingAddress[];
 }
 
-export interface ProductReview {
-  id: number | string;
-  productId: string;
-  userName: string;
-  userAvatar?: string;
-  rating: number;
-  comment: string;
-  date: string;
-}

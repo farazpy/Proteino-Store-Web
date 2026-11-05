@@ -22,20 +22,14 @@ import { CheckoutPage } from './components/CheckoutPage';
 import { AuthModal } from './components/AuthModal';
 import { AuthProvider } from './context/AuthContext';
 import { Footer } from './components/Footer';
-import { createProductSlug } from './data/products';
-import { Product, ReelItem, CartItem, OrderDetails } from './types/store';
+import { PRODUCTS, REELS_DATA, createProductSlug, getProductBySlug } from './data/products';
+import { Product, CartItem, OrderDetails } from './types/store';
 
 // Instruction 1: Increment frontend version number in header after every change/update
-const FRONTEND_VERSION = 'v1.5.4';
+const FRONTEND_VERSION = 'v1.5.0';
 
 export default function App() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  
-  // Dynamic Data State
-  const [products, setProducts] = useState<Product[]>([]);
-  const [reels, setReels] = useState<ReelItem[]>([]);
-  const [categories, setCategories] = useState<{id: string, name: string, icon: string}[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
 
   // View Routing State: now includes cart, wishlist, checkout
   const [currentView, setCurrentView] = useState<'home' | 'product' | 'essentials' | 'policy' | 'about' | 'contact' | 'cart' | 'wishlist' | 'checkout'>(() => {
@@ -91,40 +85,6 @@ export default function App() {
   });
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
   const [lastOrder, setLastOrder] = useState<OrderDetails | null>(null);
-
-  // Fetch all data from MySQL via API
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [pRes, rRes, cRes] = await Promise.all([
-          fetch('/api/products'),
-          fetch('/api/reels'),
-          fetch('/api/categories')
-        ]);
-
-        if (!pRes.ok || !rRes.ok || !cRes.ok) {
-          throw new Error('One or more API requests failed. Ensure backend server is running and updated.');
-        }
-
-        const [pData, rData, cData] = await Promise.all([
-          pRes.json(),
-          rRes.json(),
-          cRes.json()
-        ]);
-        
-        setProducts(pData);
-        setReels(rData);
-        setCategories([{ id: 'all', name: 'All Products', icon: '✨' }, ...cData]);
-      } catch (err) {
-        console.error('Error fetching dynamic data from MySQL:', err);
-        // Fallback or better error display could go here
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
-
 
   // Sync cart and wishlist with localStorage
   useEffect(() => {
@@ -350,8 +310,8 @@ export default function App() {
   };
 
   // Selected single product page match
-  const activeProduct = activeProductSlug ? products.find(p => createProductSlug(p.name) === activeProductSlug) : null;
-  const wishlistProducts = products.filter((p) => wishlistIds.has(p.id));
+  const activeProduct = activeProductSlug ? getProductBySlug(activeProductSlug) : null;
+  const wishlistProducts = PRODUCTS.filter((p) => wishlistIds.has(p.id));
 
   return (
     <AuthProvider>
@@ -365,8 +325,6 @@ export default function App() {
           cartCount={totalCartCount}
           cartTotal={grandTotal}
           onOpenCart={handleNavigateToCart}
-          categories={categories}
-          megaMenuProducts={products.slice(0, 3)}
           onSelectCategory={(cat) => {
             setSelectedCategory(cat);
             if (currentView !== 'home') handleNavigateToHome();
@@ -384,12 +342,7 @@ export default function App() {
 
         {/* Main Content Viewport */}
         <main className="flex-1">
-          {isLoading ? (
-            <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-              <div className="w-12 h-12 border-4 border-emerald-100 border-t-emerald-600 rounded-full animate-spin"></div>
-              <p className="text-sm font-bold text-emerald-800 animate-pulse">Loading Peanut Power...</p>
-            </div>
-          ) : currentView === 'cart' ? (
+          {currentView === 'cart' ? (
             /* Dedicated Separate Cart Page /cart */
             <CartPage
               items={cartItems}
@@ -429,7 +382,7 @@ export default function App() {
             /* Single Product Detail Page view for /product/{product-title} */
             <ProductDetailPage
               product={activeProduct}
-              allProducts={products}
+              allProducts={PRODUCTS}
               onAddToCart={handleAddToCart}
               onBuyNow={handleBuyNow}
               isWishlisted={wishlistIds.has(activeProduct.id)}
@@ -475,14 +428,13 @@ export default function App() {
 
               {/* 4. Shop By Category */}
               <CategoryShowcase
-                categories={categories}
                 selectedCategory={selectedCategory}
                 onSelectCategory={(cat) => setSelectedCategory(cat)}
               />
 
               {/* 5. Customer's Favourite Product Gallery */}
               <ProductGallery
-                products={products}
+                products={PRODUCTS}
                 selectedCategory={selectedCategory}
                 onSelectCategory={(cat) => setSelectedCategory(cat)}
                 onAddToCart={handleAddToCart}
@@ -500,8 +452,8 @@ export default function App() {
 
               {/* 8. Community Reels / Watch & Shop */}
               <ReelsShowcase
-                reels={reels}
-                products={products}
+                reels={REELS_DATA}
+                products={PRODUCTS}
                 onAddToCart={(prod, size) => handleAddToCart(prod, size)}
                 onQuickView={(prod) => setQuickViewProduct(prod)}
               />
@@ -554,7 +506,7 @@ export default function App() {
         <SearchModal
           isOpen={isSearchOpen}
           onClose={() => setIsSearchOpen(false)}
-          products={products}
+          products={PRODUCTS}
           onSelectProduct={(prod) => {
             handleNavigateToProduct(prod);
           }}

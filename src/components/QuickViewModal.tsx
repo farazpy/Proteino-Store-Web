@@ -29,26 +29,6 @@ export const QuickViewModal: React.FC<QuickViewModalProps> = ({
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState<'details' | 'nutrition' | 'reviews'>('details');
   const [added, setAdded] = useState(false);
-  const [reviews, setReviews] = useState<any[]>([]);
-  const [reviewsLoading, setReviewsLoading] = useState(false);
-
-  React.useEffect(() => {
-    if (activeTab === 'reviews' && product) {
-      const fetchReviews = async () => {
-        setReviewsLoading(true);
-        try {
-          const res = await fetch(`/api/products/${product.id}/reviews`);
-          const data = await res.json();
-          setReviews(data);
-        } catch (err) {
-          console.error('Error fetching reviews:', err);
-        } finally {
-          setReviewsLoading(false);
-        }
-      };
-      fetchReviews();
-    }
-  }, [activeTab, product?.id]);
 
   const slug = createProductSlug(product.name);
 
@@ -273,31 +253,26 @@ export const QuickViewModal: React.FC<QuickViewModalProps> = ({
 
               {activeTab === 'reviews' && (
                 <div className="text-xs space-y-3 max-h-40 overflow-y-auto pr-1">
-                  {reviewsLoading ? (
-                    <div className="py-4 text-center text-[10px] text-[#8a7a66]">Loading reviews...</div>
-                  ) : reviews.length === 0 ? (
-                    <div className="py-4 text-center text-[10px] text-[#8a7a66]">No reviews yet.</div>
-                  ) : (
-                    reviews.map((rev) => (
-                      <div key={rev.id} className="bg-white p-3 rounded-xl border border-[#e6dbc8]">
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="font-bold text-[#1a221b]">{rev.userName}</span>
-                          <span className="text-[10px] text-[#857663]">{rev.date}</span>
-                        </div>
-                        <div className="flex text-[#ffc400] mb-1">
-                          {[...Array(5)].map((_, i) => (
-                            <Star key={i} className={`w-2.5 h-2.5 ${i < rev.rating ? 'fill-[#ffc400]' : 'text-[#dfd2be]'}`} />
-                          ))}
-                        </div>
-                        <p className="text-[10px] text-[#554635] leading-relaxed">
-                          "{rev.comment}"
-                        </p>
-                      </div>
-                    ))
-                  )}
+                  <div className="bg-white p-3 rounded-xl border border-[#e6dbc8]">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-bold text-[#1a221b]">Kunal M.</span>
+                      <span className="text-[10px] text-[#857663]">Verified Buyer</span>
+                    </div>
+                    <p className="text-[11px] text-[#554635]">
+                      "Hands down the best cold coffee protein powder I've tried. Dissolves cleanly without clumps and doesn't upset my stomach."
+                    </p>
+                  </div>
+                  <div className="bg-white p-3 rounded-xl border border-[#e6dbc8]">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-bold text-[#1a221b]">Ananya D.</span>
+                      <span className="text-[10px] text-[#857663]">Verified Buyer</span>
+                    </div>
+                    <p className="text-[11px] text-[#554635]">
+                      "The natural peanut crunch is unmatched! No sugar, no weird oils. Just wholesome roasted peanuts."
+                    </p>
+                  </div>
                 </div>
               )}
-
 
               {/* Variant Picker */}
               <div className="mt-4 pt-3 border-t border-[#e9dcce]">
