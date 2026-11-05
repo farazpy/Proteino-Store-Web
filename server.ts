@@ -9,8 +9,10 @@ import { testConnection } from './src/db/mysql.ts';
 dotenv.config();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-// Port 3000 is required by AI Studio preview iframe constraint
-const PORT = 3000;
+// Port 3000 in dev for AI Studio preview iframe; process.env.PORT (e.g. 3002) in production on VPS
+const PORT = process.env.NODE_ENV === 'production'
+  ? (process.env.PORT ? parseInt(process.env.PORT, 10) : 3000)
+  : 3000;
 const IS_DEV = process.env.NODE_ENV !== 'production';
 
 async function startServer() {
