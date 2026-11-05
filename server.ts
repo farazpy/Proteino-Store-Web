@@ -163,6 +163,90 @@ async function startServer() {
     }
   });
 
+  // 4. Fetch all categories
+  app.get('/api/categories', async (req, res) => {
+    try {
+      const { pool } = await import('./src/db/mysql.ts');
+      const [rows]: any = await pool.query('SELECT * FROM product_categories ORDER BY id ASC');
+      const mapped = rows.map((c: any) => ({
+        id: c.id,
+        name: c.name,
+        icon: c.icon,
+        description: c.description,
+        image: c.image,
+        badge: c.badge,
+        bgTone: c.bg_tone
+      }));
+      return res.json(mapped);
+    } catch (err: any) {
+      console.error('[API CATEGORIES ERROR]:', err);
+      return res.status(500).json({ error: 'Failed to fetch categories' });
+    }
+  });
+
+  // 5. Fetch all products with variants and flavors
+  app.get('/api/products', async (req, res) => {
+    try {
+      const { pool } = await import('./src/db/mysql.ts');
+      
+      // Fetch products
+      const [products]: any = await pool.query('SELECT * FROM products ORDER BY created_at DESC');
+      
+      // Fetch variants and flavors in parallel
+      const [variants]: any = await pool.query('SELECT * FROM product_variants');
+      const [flavors]: any = await pool.query('SELECT * FROM product_flavors');
+
+      // Assemble final products array
+      const fullProducts = products.map((p: any) => ({
+        ...p,
+        category: p.category_id,
+        isBestseller: !!p.is_bestseller,
+        inStock: !!p.in_stock,
+        variants: variants
+          .filter((v: any) => v.product_id === p.id)
+          .map((v: any) => ({ size: v.size, price: v.price, originalPrice: v.original_price })),
+        flavors: flavors
+          .filter((f: any) => f.product_id === p.id)
+          .map((f: any) => f.flavor),
+        // These might be null if not provided during seed
+        secondaryImage: p.secondary_image,
+        hasFreeGift: p.has_free_gift,
+        badge: p.badge,
+        nutrition: p.nutrition,
+        features: p.features,
+      }));
+
+      return res.json(fullProducts);
+    } catch (err: any) {
+      console.error('[API PRODUCTS ERROR]:', err);
+      return res.status(500).json({ error: 'Failed to fetch products' });
+    }
+  });
+
+  // 6. Fetch reels
+  app.get('/api/reels', async (req, res) => {
+    try {
+      const { pool } = await import('./src/db/mysql.ts');
+      const [rows]: any = await pool.query('SELECT * FROM reels');
+      const mappedReels = rows.map((r: any) => ({
+        id: r.id,
+        creatorName: r.creator_name,
+        handle: r.handle,
+        caption: r.caption,
+        image: r.image,
+        linkedProductId: r.linked_product_id,
+        productName: r.product_name,
+        productPrice: r.product_price,
+        originalPrice: r.original_price,
+      }));
+      return res.json(mappedReels);
+    } catch (err: any) {
+      console.error('[API REELS ERROR]:', err);
+      return res.status(500).json({ error: 'Failed to fetch reels' });
+    }
+  });
+
+
   // 4. Custom endpoint /update: directly executes deploy.sh on main store domain
   app.all('/update', (req, res) => {
     const deployScript = path.resolve(__dirname, 'deploy.sh');
