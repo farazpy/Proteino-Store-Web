@@ -68,7 +68,7 @@ export const Header: React.FC<HeaderProps> = ({
   }, []);
 
   return (
-    <header className="sticky top-0 z-40 bg-[#fbf7f0]/80 backdrop-blur-xl border-b border-white/30 transition-all saturate-150 shadow-[0_4px_30px_rgba(0,0,0,0.03)]">
+    <header className="sticky top-0 z-40 w-full bg-[#fbf7f0]/80 backdrop-blur-xl border-b border-white/30 transition-all saturate-150 shadow-[0_4px_30px_rgba(0,0,0,0.03)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20 gap-2 sm:gap-4">
           {/* Zone 1: Brand Wordmark + Version Pill */}
@@ -250,7 +250,7 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Wishlist Trigger */}
             <button
               onClick={onOpenWishlist}
-              className="relative p-2 sm:p-2.5 rounded-full text-[#4a4031] hover:text-[#00632d] hover:bg-white/50 transition-colors cursor-pointer"
+              className="hidden sm:flex relative p-2 sm:p-2.5 rounded-full text-[#4a4031] hover:text-[#00632d] hover:bg-white/50 transition-colors cursor-pointer"
               title="View Wishlist"
               aria-label="View Wishlist"
             >
