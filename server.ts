@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import { createServer as createViteServer } from 'vite';
 import path from 'path';
 import fs from 'fs';
+import { spawn } from 'child_process';
 import { fileURLToPath } from 'url';
 import { testConnection } from './src/db/mysql.ts';
 
@@ -160,6 +161,84 @@ async function startServer() {
       console.error('[API ORDER CREATE ERROR]:', err?.message || err);
       return res.json({ success: true, orderId, notice: 'Recorded locally' });
     }
+  });
+
+  // 4. Custom endpoint /update: directly executes deploy.sh on main store domain
+  app.all('/update', (req, res) => {
+    const deployScript = path.resolve(__dirname, 'deploy.sh');
+
+    if (!fs.existsSync(deployScript)) {
+      console.error(`[UPDATE ERROR]: deploy.sh not found at ${deployScript}`);
+      if (req.accepts('html')) {
+        return res.status(500).send(`
+          <!DOCTYPE html>
+          <html>
+            <head><title>Update Failed - Theproteino</title></head>
+            <body style="font-family: -apple-system, sans-serif; background: #fff5f5; color: #c53030; padding: 40px; text-align: center;">
+              <h2>❌ Error: deploy.sh not found in root</h2>
+              <p>Make sure deploy.sh exists at <code>${deployScript}</code></p>
+            </body>
+          </html>
+        `);
+      }
+      return res.status(500).json({ success: false, error: 'deploy.sh not found in root directory' });
+    }
+
+    console.log(`\n======================================================`);
+    console.log(`[UPDATE ROUTE] /update triggered at ${new Date().toISOString()}`);
+    console.log(`[UPDATE ROUTE] Triggered by: ${req.ip} | User-Agent: ${req.get('user-agent') || 'unknown'}`);
+    console.log(`[UPDATE ROUTE] Executing: bash ${deployScript}`);
+    console.log(`======================================================\n`);
+
+    // Browser friendly response
+    if (req.accepts('html') && req.method === 'GET') {
+      res.status(200).send(`
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>Theproteino - Auto Deploy</title>
+            <meta http-equiv="refresh" content="15;url=/" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <style>
+              body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #fbf7f0; color: #1a221b; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+              .card { background: white; border-radius: 24px; padding: 36px; max-width: 500px; text-align: center; box-shadow: 0 12px 35px rgba(0,0,0,0.06); border: 1px solid #e7decb; }
+              .spinner { width: 44px; height: 44px; border: 4px solid #e2ebd8; border-top-color: #00632d; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
+              @keyframes spin { to { transform: rotate(360deg); } }
+              h2 { margin: 0 0 12px; color: #00632d; font-size: 22px; }
+              p { font-size: 14px; color: #5a5043; line-height: 1.5; margin: 0 0 16px; }
+              code { background: #eaf4ec; color: #00632d; padding: 4px 8px; border-radius: 6px; font-size: 13px; font-weight: 600; display: inline-block; margin-top: 6px; }
+            </style>
+          </head>
+          <body>
+            <div class="card">
+              <div class="spinner"></div>
+              <h2>Deploy Script Triggered!</h2>
+              <p>Executing <code>deploy.sh</code> in background: pulling latest code from GitHub, running <code>npm run build</code>, and restarting PM2.</p>
+              <p style="font-size: 12px; color: #8a7a66;">Redirecting back to homepage in 15 seconds...</p>
+            </div>
+          </body>
+        </html>
+      `);
+    } else {
+      res.status(200).json({
+        success: true,
+        message: 'Auto-deployment process started successfully with deploy.sh',
+        triggeredAt: new Date().toISOString()
+      });
+    }
+
+    // Spawn deploy.sh asynchronously
+    const child = spawn('bash', [deployScript], {
+      cwd: __dirname,
+      stdio: 'inherit',
+      detached: true
+    });
+
+    child.on('error', (err) => {
+      console.error('[UPDATE ROUTE ERROR] Failed to spawn deploy.sh:', err);
+    });
+
+    child.unref();
   });
 
   if (IS_DEV) {
