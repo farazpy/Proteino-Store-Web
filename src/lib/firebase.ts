@@ -10,14 +10,16 @@ import {
   User
 } from 'firebase/auth';
 
-// Read config from Vite client env or standard fallback
+import rawAppletConfig from '../../firebase-applet-config.json';
+
+// Combine provisioned applet config with env overrides if present
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyDummyKeyForInitialConfigFallback",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "theproteino-auth.firebaseapp.com",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "theproteino-auth",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "theproteino-auth.appspot.com",
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "1234567890",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:1234567890:web:abcdef"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || rawAppletConfig.apiKey,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || rawAppletConfig.authDomain,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || rawAppletConfig.projectId,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || rawAppletConfig.storageBucket,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || rawAppletConfig.messagingSenderId,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || rawAppletConfig.appId
 };
 
 const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
