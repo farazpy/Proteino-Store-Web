@@ -183,12 +183,26 @@ export async function initializeTables() {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
 
+    // 9. Product Reviews table
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS product_reviews (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        product_id VARCHAR(64) NOT NULL,
+        user_name VARCHAR(255) NOT NULL,
+        user_avatar TEXT NULL,
+        rating INT NOT NULL,
+        comment TEXT NOT NULL,
+        date DATE NOT NULL,
+        INDEX idx_rev_prod (product_id)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+
     // Seeding logic (only if empty)
     const [catCount]: any = await connection.query('SELECT COUNT(*) as count FROM product_categories');
     if (catCount[0].count === 0) {
       console.log('[DATABASE SEED]: Seeding initial product data...');
       
-      const { CATEGORIES, PRODUCTS, REELS_DATA } = await import('../data/products.ts');
+      const { CATEGORIES, PRODUCTS, REELS_DATA, REVIEWS_DATA } = await import('../data/products.ts');
 
       // Seed Categories
       const uiCategories = [
@@ -234,6 +248,14 @@ export async function initializeTables() {
             await connection.query('INSERT INTO product_flavors (product_id, flavor) VALUES (?, ?)', [prod.id, f]);
           }
         }
+      }
+
+      // Seed Reviews
+      for (const rev of REVIEWS_DATA) {
+        await connection.query(`
+          INSERT INTO product_reviews (product_id, user_name, rating, comment, date)
+          VALUES (?, ?, ?, ?, ?)
+        `, [rev.productId, rev.userName, rev.rating, rev.comment, rev.date]);
       }
 
       // Seed Reels

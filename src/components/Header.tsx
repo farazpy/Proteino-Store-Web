@@ -104,6 +104,10 @@ export const Header: React.FC<HeaderProps> = ({
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }
               }}
+              onMouseEnter={() => {
+                setMegaMenuOpen(false);
+                setCategoryDropdownOpen(false);
+              }}
               className="hover:text-[#00632d] transition-colors py-2 whitespace-nowrap shrink-0 cursor-pointer relative group"
             >
               Home
@@ -113,7 +117,10 @@ export const Header: React.FC<HeaderProps> = ({
             {/* 2. Shop with Mega Menu Dropdown Trigger */}
             <div
               className="relative"
-              onMouseEnter={() => setMegaMenuOpen(true)}
+              onMouseEnter={() => {
+                setMegaMenuOpen(true);
+                setCategoryDropdownOpen(false);
+              }}
             >
               <button
                 onClick={() => setMegaMenuOpen(!megaMenuOpen)}
@@ -130,7 +137,10 @@ export const Header: React.FC<HeaderProps> = ({
             {/* 3. Categories Dropdown */}
             <div
               className="relative"
-              onMouseEnter={() => setCategoryDropdownOpen(true)}
+              onMouseEnter={() => {
+                setCategoryDropdownOpen(true);
+                setMegaMenuOpen(false);
+              }}
             >
               <button
                 onClick={() => setCategoryDropdownOpen(!categoryDropdownOpen)}
@@ -185,6 +195,10 @@ export const Header: React.FC<HeaderProps> = ({
             {onNavigateToEssentials && (
               <button
                 onClick={onNavigateToEssentials}
+                onMouseEnter={() => {
+                  setMegaMenuOpen(false);
+                  setCategoryDropdownOpen(false);
+                }}
                 className="text-[#00632d] bg-[#eaf4ec] hover:bg-[#d8eedd] px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap shrink-0 flex items-center gap-1 cursor-pointer"
               >
                 <Sparkles className="w-3.5 h-3.5" />
@@ -196,6 +210,10 @@ export const Header: React.FC<HeaderProps> = ({
             {onNavigateToAbout && (
               <button
                 onClick={onNavigateToAbout}
+                onMouseEnter={() => {
+                  setMegaMenuOpen(false);
+                  setCategoryDropdownOpen(false);
+                }}
                 className="hover:text-[#00632d] transition-colors py-2 whitespace-nowrap shrink-0 cursor-pointer relative group"
               >
                 About
@@ -207,6 +225,10 @@ export const Header: React.FC<HeaderProps> = ({
             {onNavigateToContact && (
               <button
                 onClick={onNavigateToContact}
+                onMouseEnter={() => {
+                  setMegaMenuOpen(false);
+                  setCategoryDropdownOpen(false);
+                }}
                 className="hover:text-[#00632d] transition-colors py-2 whitespace-nowrap shrink-0 cursor-pointer relative group"
               >
                 Contact

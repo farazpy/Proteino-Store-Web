@@ -246,6 +246,29 @@ async function startServer() {
     }
   });
 
+  // 7. Fetch reviews for a specific product
+  app.get('/api/products/:productId/reviews', async (req, res) => {
+    const { productId } = req.params;
+    try {
+      const { pool } = await import('./src/db/mysql.ts');
+      const [rows]: any = await pool.query('SELECT * FROM product_reviews WHERE product_id = ? ORDER BY date DESC', [productId]);
+      const mappedReviews = rows.map((r: any) => ({
+        id: r.id,
+        productId: r.product_id,
+        userName: r.user_name,
+        userAvatar: r.user_avatar,
+        rating: r.rating,
+        comment: r.comment,
+        date: r.date.toISOString().split('T')[0],
+      }));
+      return res.json(mappedReviews);
+    } catch (err: any) {
+      console.error('[API REVIEWS ERROR]:', err);
+      return res.status(500).json({ error: 'Failed to fetch reviews' });
+    }
+  });
+
+
 
   // 4. Custom endpoint /update: directly executes deploy.sh on main store domain
   app.all('/update', (req, res) => {
