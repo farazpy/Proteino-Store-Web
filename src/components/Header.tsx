@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ShoppingBag, Search, Heart, Menu, X, ChevronDown, Sparkles, ArrowRight, Gift, ShieldCheck } from 'lucide-react';
+import { ShoppingBag, Search, Heart, Menu, X, ChevronDown, Sparkles, ArrowRight, Gift, ShieldCheck, User as UserIcon } from 'lucide-react';
 import { Product } from '../types/store';
 import { PRODUCTS, createProductSlug } from '../data/products';
 
@@ -12,6 +12,7 @@ interface HeaderProps {
   onOpenSearch: () => void;
   wishlistCount: number;
   onOpenWishlist: () => void;
+  onOpenAuth?: () => void;
   onNavigateToEssentials?: () => void;
   onNavigateToAbout?: () => void;
   onNavigateToContact?: () => void;
@@ -28,6 +29,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenSearch,
   wishlistCount,
   onOpenWishlist,
+  onOpenAuth,
   onNavigateToEssentials,
   onNavigateToAbout,
   onNavigateToContact,
@@ -235,6 +237,16 @@ export const Header: React.FC<HeaderProps> = ({
               <Search className="w-4 h-4 sm:w-5 h-5" />
             </button>
 
+            {/* User Profile / Auth Trigger */}
+            <button
+              onClick={onOpenAuth}
+              className="p-2 sm:p-2.5 rounded-full text-[#4a4031] hover:text-[#00632d] hover:bg-white/50 transition-colors cursor-pointer"
+              title="My Account"
+              aria-label="My Account"
+            >
+              <UserIcon className="w-4 h-4 sm:w-5 h-5" />
+            </button>
+
             {/* Wishlist Trigger */}
             <button
               onClick={onOpenWishlist}
@@ -250,7 +262,7 @@ export const Header: React.FC<HeaderProps> = ({
               )}
             </button>
 
-            {/* Primary Action: Shopping Cart Drawer CTA */}
+            {/* Primary Action: Shopping Cart Bag CTA */}
             <button
               onClick={onOpenCart}
               className="flex items-center gap-1.5 sm:gap-2.5 bg-[#00632d] hover:bg-[#004d23] text-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl font-bold text-xs sm:text-sm shadow-sm hover:shadow transition-all whitespace-nowrap shrink-0 group active:scale-95 cursor-pointer"
@@ -441,6 +453,58 @@ export const Header: React.FC<HeaderProps> = ({
               >
                 🏠 Home
               </button>
+
+              {/* Mobile Cart */}
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  onOpenCart();
+                }}
+                className="px-4 py-2 text-left font-semibold text-sm text-[#2c2417] hover:bg-[#efe7d5] rounded-lg transition-colors flex items-center justify-between"
+              >
+                <div className="flex items-center gap-2">
+                  <ShoppingBag className="w-4 h-4 text-[#00632d]" />
+                  <span>Shopping Cart</span>
+                </div>
+                {cartCount > 0 && (
+                  <span className="bg-[#00632d] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                    {cartCount} items
+                  </span>
+                )}
+              </button>
+
+              {/* Mobile Wishlist */}
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  onOpenWishlist();
+                }}
+                className="px-4 py-2 text-left font-semibold text-sm text-[#2c2417] hover:bg-[#efe7d5] rounded-lg transition-colors flex items-center justify-between"
+              >
+                <div className="flex items-center gap-2">
+                  <Heart className="w-4 h-4 text-[#e63946]" />
+                  <span>My Wishlist</span>
+                </div>
+                {wishlistCount > 0 && (
+                  <span className="bg-[#e63946] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                    {wishlistCount}
+                  </span>
+                )}
+              </button>
+
+              {/* Mobile Account */}
+              {onOpenAuth && (
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    onOpenAuth();
+                  }}
+                  className="px-4 py-2 text-left font-semibold text-sm text-[#2c2417] hover:bg-[#efe7d5] rounded-lg transition-colors flex items-center gap-2"
+                >
+                  <UserIcon className="w-4 h-4 text-[#00632d]" />
+                  <span>My Account / Sign In</span>
+                </button>
+              )}
 
               {/* Mobile Categories */}
               <div className="px-4 py-1 text-xs font-bold uppercase text-[#7d705c] mt-1">

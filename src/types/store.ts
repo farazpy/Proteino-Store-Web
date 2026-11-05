@@ -78,3 +78,15 @@ export interface OrderDetails {
   shippingAddress: ShippingAddress;
   estimatedDelivery: string;
 }
+
+export interface UserProfile {
+  id?: number | string;
+  firebaseUid: string;
+  email: string;
+  displayName?: string;
+  photoUrl?: string;
+  phone?: string;
+  provider: 'password' | 'google';
+  addresses?: ShippingAddress[];
+}
+

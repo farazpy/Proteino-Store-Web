@@ -9,7 +9,6 @@ import { LiveCounterBanner } from './components/LiveCounterBanner';
 import { ReelsShowcase } from './components/ReelsShowcase';
 import { BrandStoryBanner } from './components/BrandStoryBanner';
 import { CartDrawer } from './components/CartDrawer';
-import { CheckoutModal } from './components/CheckoutModal';
 import { QuickViewModal } from './components/QuickViewModal';
 import { SearchModal } from './components/SearchModal';
 import { ProductDetailPage } from './components/ProductDetailPage';
@@ -17,20 +16,28 @@ import { StoreEssentialsPage } from './components/StoreEssentialsPage';
 import { PolicyPages, PolicySlug } from './components/PolicyPages';
 import { AboutPage } from './components/AboutPage';
 import { ContactPage } from './components/ContactPage';
+import { CartPage } from './components/CartPage';
+import { WishlistPage } from './components/WishlistPage';
+import { CheckoutPage } from './components/CheckoutPage';
+import { AuthModal } from './components/AuthModal';
+import { AuthProvider } from './context/AuthContext';
 import { Footer } from './components/Footer';
 import { PRODUCTS, REELS_DATA, createProductSlug, getProductBySlug } from './data/products';
 import { Product, CartItem, OrderDetails } from './types/store';
 
 // Instruction 1: Increment frontend version number in header after every change/update
-const FRONTEND_VERSION = 'v1.3.7';
+const FRONTEND_VERSION = 'v1.4.2';
 
 export default function App() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
-  // View Routing State
-  const [currentView, setCurrentView] = useState<'home' | 'product' | 'essentials' | 'policy' | 'about' | 'contact'>(() => {
+  // View Routing State: now includes cart, wishlist, checkout
+  const [currentView, setCurrentView] = useState<'home' | 'product' | 'essentials' | 'policy' | 'about' | 'contact' | 'cart' | 'wishlist' | 'checkout'>(() => {
     const path = window.location.pathname;
     if (path.startsWith('/product/')) return 'product';
+    if (path === '/cart') return 'cart';
+    if (path === '/wishlist') return 'wishlist';
+    if (path === '/checkout') return 'checkout';
     if (path === '/essentials') return 'essentials';
     if (path === '/about') return 'about';
     if (path === '/contact') return 'contact';
@@ -65,11 +72,11 @@ export default function App() {
     },
   ]);
 
-  const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
-  const [isCheckoutOpen, setIsCheckoutOpen] = useState<boolean>(false);
+  const [isCartDrawerOpen, setIsCartDrawerOpen] = useState<boolean>(false);
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
-  const [wishlistIds, setWishlistIds] = useState<Set<string>>(new Set(['prod-pb-crunchy']));
+  const [wishlistIds, setWishlistIds] = useState<Set<string>>(new Set(['prod-pb-crunchy', 'prod-cold-coffee']));
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>('PROTEIN15');
   const [lastOrder, setLastOrder] = useState<OrderDetails | null>(null);
 
@@ -80,6 +87,12 @@ export default function App() {
       if (path.startsWith('/product/')) {
         setCurrentView('product');
         setActiveProductSlug(path.replace('/product/', '').replace(/\/$/, ''));
+      } else if (path === '/cart') {
+        setCurrentView('cart');
+      } else if (path === '/wishlist') {
+        setCurrentView('wishlist');
+      } else if (path === '/checkout') {
+        setCurrentView('checkout');
       } else if (path === '/essentials') {
         setCurrentView('essentials');
       } else if (path === '/about') {
@@ -106,6 +119,26 @@ export default function App() {
     setActiveProductSlug(slug);
     setCurrentView('product');
     window.history.pushState({}, '', `/product/${slug}`);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleNavigateToCart = () => {
+    setCurrentView('cart');
+    setIsCartDrawerOpen(false);
+    window.history.pushState({}, '', '/cart');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleNavigateToWishlist = () => {
+    setCurrentView('wishlist');
+    window.history.pushState({}, '', '/wishlist');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleNavigateToCheckout = () => {
+    setCurrentView('checkout');
+    setIsCartDrawerOpen(false);
+    window.history.pushState({}, '', '/checkout');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -175,13 +208,13 @@ export default function App() {
       }
     });
 
-    setIsCartOpen(true);
+    setIsCartDrawerOpen(true);
   };
 
   const handleBuyNow = (product: Product, size: string, flavor?: string) => {
     handleAddToCart(product, size, flavor);
-    setIsCartOpen(false);
-    setIsCheckoutOpen(true);
+    setIsCartDrawerOpen(false);
+    handleNavigateToCheckout();
   };
 
   const handleUpdateQuantity = (productId: string, size: string, quantity: number) => {
@@ -248,8 +281,8 @@ export default function App() {
   const totalCartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
   const handleProceedToCheckout = () => {
-    setIsCartOpen(false);
-    setIsCheckoutOpen(true);
+    setIsCartDrawerOpen(false);
+    handleNavigateToCheckout();
   };
 
   const handleOrderComplete = (order: OrderDetails) => {
@@ -259,185 +292,213 @@ export default function App() {
 
   // Selected single product page match
   const activeProduct = activeProductSlug ? getProductBySlug(activeProductSlug) : null;
+  const wishlistProducts = PRODUCTS.filter((p) => wishlistIds.has(p.id));
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#fbf7f0] text-[#1a221b] selection:bg-[#8ee000] selection:text-[#004d23]">
-      {/* 1. Slim Promotional Top Banner */}
-      <TopAnnouncement onApplyCoupon={handleApplyCoupon} />
+    <AuthProvider>
+      <div className="min-h-screen flex flex-col bg-[#fbf7f0] text-[#1a221b] selection:bg-[#8ee000] selection:text-[#004d23]">
+        {/* 1. Slim Promotional Top Banner */}
+        <TopAnnouncement onApplyCoupon={handleApplyCoupon} />
 
-      {/* 2. Primary Header with Top Bar Contract and Version Indicator */}
-      <Header
-        version={FRONTEND_VERSION}
-        cartCount={totalCartCount}
-        cartTotal={grandTotal}
-        onOpenCart={() => setIsCartOpen(true)}
-        onSelectCategory={(cat) => {
-          setSelectedCategory(cat);
-          if (currentView !== 'home') handleNavigateToHome();
-        }}
-        onOpenSearch={() => setIsSearchOpen(true)}
-        wishlistCount={wishlistIds.size}
-        onOpenWishlist={() => {
-          setSelectedCategory('all');
-          if (currentView !== 'home') handleNavigateToHome();
-          const el = document.getElementById('products-gallery');
-          if (el) el.scrollIntoView({ behavior: 'smooth' });
-        }}
-        onNavigateToEssentials={handleNavigateToEssentials}
-        onNavigateToAbout={handleNavigateToAbout}
-        onNavigateToContact={handleNavigateToContact}
-        onNavigateToHome={handleNavigateToHome}
-        onNavigateToProduct={handleNavigateToProduct}
-      />
+        {/* 2. Primary Header with Top Bar Contract and Version Indicator */}
+        <Header
+          version={FRONTEND_VERSION}
+          cartCount={totalCartCount}
+          cartTotal={grandTotal}
+          onOpenCart={handleNavigateToCart}
+          onSelectCategory={(cat) => {
+            setSelectedCategory(cat);
+            if (currentView !== 'home') handleNavigateToHome();
+          }}
+          onOpenSearch={() => setIsSearchOpen(true)}
+          wishlistCount={wishlistIds.size}
+          onOpenWishlist={handleNavigateToWishlist}
+          onOpenAuth={() => setIsAuthModalOpen(true)}
+          onNavigateToEssentials={handleNavigateToEssentials}
+          onNavigateToAbout={handleNavigateToAbout}
+          onNavigateToContact={handleNavigateToContact}
+          onNavigateToHome={handleNavigateToHome}
+          onNavigateToProduct={handleNavigateToProduct}
+        />
 
-      {/* Main Content Viewport */}
-      <main className="flex-1">
-        {currentView === 'product' && activeProduct ? (
-          /* Single Product Detail Page view for /product/{product-title} */
-          <ProductDetailPage
-            product={activeProduct}
-            allProducts={PRODUCTS}
-            onAddToCart={handleAddToCart}
-            onBuyNow={handleBuyNow}
-            isWishlisted={wishlistIds.has(activeProduct.id)}
-            onToggleWishlist={handleToggleWishlist}
-            onNavigateToProduct={(slug) => handleNavigateToProduct(slug)}
-            onGoHome={handleNavigateToHome}
-          />
-        ) : currentView === 'essentials' ? (
-          /* Store Essentials Page view for /essentials */
-          <StoreEssentialsPage
-            onAddToCart={handleAddToCart}
-            onGoHome={handleNavigateToHome}
-            onNavigateToProduct={(slug) => handleNavigateToProduct(slug)}
-          />
-        ) : currentView === 'about' ? (
-          /* About Us Page view for /about */
-          <AboutPage
-            onGoHome={handleNavigateToHome}
-            onNavigateToEssentials={handleNavigateToEssentials}
-          />
-        ) : currentView === 'contact' ? (
-          /* Contact Us Page view for /contact */
-          <ContactPage
-            onGoHome={handleNavigateToHome}
-          />
-        ) : currentView === 'policy' ? (
-          /* Store Policy Pages view for /pages/{policy-slug} */
-          <PolicyPages
-            currentPolicySlug={currentPolicySlug}
-            onSelectPolicy={handleNavigateToPolicy}
-            onGoHome={handleNavigateToHome}
-          />
-        ) : (
-          /* Storefront Homepage View */
-          <>
-            {/* 3. Hero Campaign Banner */}
-            <HeroBanner
-              onShopNow={() => {
-                const el = document.getElementById('products-gallery');
-                if (el) el.scrollIntoView({ behavior: 'smooth' });
-              }}
+        {/* Main Content Viewport */}
+        <main className="flex-1">
+          {currentView === 'cart' ? (
+            /* Dedicated Separate Cart Page /cart */
+            <CartPage
+              items={cartItems}
+              onUpdateQuantity={handleUpdateQuantity}
+              onRemoveItem={handleRemoveItem}
+              onProceedToCheckout={handleNavigateToCheckout}
+              onGoHome={handleNavigateToHome}
+              appliedCoupon={appliedCoupon}
+              onApplyCoupon={handleApplyCoupon}
+              onRemoveCoupon={handleRemoveCoupon}
+              discountAmount={discountAmount}
             />
-
-            {/* 4. Shop By Category (Referencing image_3a54c866.png) */}
-            <CategoryShowcase
-              selectedCategory={selectedCategory}
-              onSelectCategory={(cat) => setSelectedCategory(cat)}
-            />
-
-            {/* 5. Customer's Favourite Product Gallery */}
-            <ProductGallery
-              products={PRODUCTS}
-              selectedCategory={selectedCategory}
-              onSelectCategory={(cat) => setSelectedCategory(cat)}
+          ) : currentView === 'wishlist' ? (
+            /* Dedicated Separate Wishlist Page /wishlist */
+            <WishlistPage
+              wishlistProducts={wishlistProducts}
+              onRemoveFromWishlist={handleToggleWishlist}
               onAddToCart={handleAddToCart}
-              onQuickView={(prod) => setQuickViewProduct(prod)}
-              onOpenProductPage={(prod) => handleNavigateToProduct(prod)}
-              wishlistIds={wishlistIds}
+              onOpenProductPage={handleNavigateToProduct}
+              onGoHome={handleNavigateToHome}
+            />
+          ) : currentView === 'checkout' ? (
+            /* Dedicated Separate Checkout Page /checkout */
+            <CheckoutPage
+              items={cartItems}
+              subtotal={subtotal}
+              discount={discountAmount}
+              couponCode={appliedCoupon || undefined}
+              shipping={shipping}
+              total={grandTotal}
+              onOrderComplete={handleOrderComplete}
+              onGoToCart={handleNavigateToCart}
+              onGoHome={handleNavigateToHome}
+              onOpenAuthModal={() => setIsAuthModalOpen(true)}
+            />
+          ) : currentView === 'product' && activeProduct ? (
+            /* Single Product Detail Page view for /product/{product-title} */
+            <ProductDetailPage
+              product={activeProduct}
+              allProducts={PRODUCTS}
+              onAddToCart={handleAddToCart}
+              onBuyNow={handleBuyNow}
+              isWishlisted={wishlistIds.has(activeProduct.id)}
               onToggleWishlist={handleToggleWishlist}
+              onNavigateToProduct={(slug) => handleNavigateToProduct(slug)}
+              onGoHome={handleNavigateToHome}
             />
-
-            {/* 6. "Theproteino vs The Rest" Matrix (Referencing image_361b34c1.png) */}
-            <ComparisonMatrix />
-
-            {/* 7. Live Milestones & Nutrition Badges (Referencing image_9d57883d.png) */}
-            <LiveCounterBanner />
-
-            {/* 8. Community Reels / Watch & Shop (Referencing image_c7a48147.png) */}
-            <ReelsShowcase
-              reels={REELS_DATA}
-              products={PRODUCTS}
-              onAddToCart={(prod, size) => handleAddToCart(prod, size)}
-              onQuickView={(prod) => setQuickViewProduct(prod)}
+          ) : currentView === 'essentials' ? (
+            /* Store Essentials Page view for /essentials */
+            <StoreEssentialsPage
+              onAddToCart={handleAddToCart}
+              onGoHome={handleNavigateToHome}
+              onNavigateToProduct={(slug) => handleNavigateToProduct(slug)}
             />
+          ) : currentView === 'about' ? (
+            /* About Us Page view for /about */
+            <AboutPage
+              onGoHome={handleNavigateToHome}
+              onNavigateToEssentials={handleNavigateToEssentials}
+            />
+          ) : currentView === 'contact' ? (
+            /* Contact Us Page view for /contact */
+            <ContactPage
+              onGoHome={handleNavigateToHome}
+            />
+          ) : currentView === 'policy' ? (
+            /* Store Policy Pages view for /pages/{policy-slug} */
+            <PolicyPages
+              currentPolicySlug={currentPolicySlug}
+              onSelectPolicy={handleNavigateToPolicy}
+              onGoHome={handleNavigateToHome}
+            />
+          ) : (
+            /* Storefront Homepage View */
+            <>
+              {/* 3. Hero Campaign Banner */}
+              <HeroBanner
+                onShopNow={() => {
+                  const el = document.getElementById('products-gallery');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}
+              />
 
-            {/* 9. Brand Story Wave Banner (Referencing image_f7e5a366.png) */}
-            <BrandStoryBanner />
-          </>
-        )}
-      </main>
+              {/* 4. Shop By Category */}
+              <CategoryShowcase
+                selectedCategory={selectedCategory}
+                onSelectCategory={(cat) => setSelectedCategory(cat)}
+              />
 
-      {/* 10. Comprehensive Footer */}
-      <Footer
-        onNavigateToPolicy={handleNavigateToPolicy}
-        onNavigateToEssentials={handleNavigateToEssentials}
-        onNavigateToAbout={handleNavigateToAbout}
-        onNavigateToContact={handleNavigateToContact}
-        onSelectCategory={(cat) => {
-          setSelectedCategory(cat);
-          if (currentView !== 'home') handleNavigateToHome();
-          const el = document.getElementById('products-gallery');
-          if (el) el.scrollIntoView({ behavior: 'smooth' });
-        }}
-      />
+              {/* 5. Customer's Favourite Product Gallery */}
+              <ProductGallery
+                products={PRODUCTS}
+                selectedCategory={selectedCategory}
+                onSelectCategory={(cat) => setSelectedCategory(cat)}
+                onAddToCart={handleAddToCart}
+                onQuickView={(prod) => setQuickViewProduct(prod)}
+                onOpenProductPage={(prod) => handleNavigateToProduct(prod)}
+                wishlistIds={wishlistIds}
+                onToggleWishlist={handleToggleWishlist}
+              />
 
-      {/* 11. Slide-Over Cart Drawer */}
-      <CartDrawer
-        isOpen={isCartOpen}
-        onClose={() => setIsCartOpen(false)}
-        items={cartItems}
-        onUpdateQuantity={handleUpdateQuantity}
-        onRemoveItem={handleRemoveItem}
-        onProceedToCheckout={handleProceedToCheckout}
-        appliedCoupon={appliedCoupon}
-        onApplyCoupon={handleApplyCoupon}
-        onRemoveCoupon={handleRemoveCoupon}
-        discountAmount={discountAmount}
-      />
+              {/* 6. "Theproteino vs The Rest" Matrix */}
+              <ComparisonMatrix />
 
-      {/* 12. Intuitive Multi-Step Checkout Modal */}
-      <CheckoutModal
-        isOpen={isCheckoutOpen}
-        onClose={() => setIsCheckoutOpen(false)}
-        items={cartItems}
-        subtotal={subtotal}
-        discount={discountAmount}
-        couponCode={appliedCoupon || undefined}
-        shipping={shipping}
-        total={grandTotal}
-        onOrderComplete={handleOrderComplete}
-      />
+              {/* 7. Live Milestones & Nutrition Badges */}
+              <LiveCounterBanner />
 
-      {/* 13. Quick View Modal */}
-      <QuickViewModal
-        product={quickViewProduct}
-        onClose={() => setQuickViewProduct(null)}
-        onAddToCart={handleAddToCart}
-        onOpenProductPage={(slug) => handleNavigateToProduct(slug)}
-        isWishlisted={quickViewProduct ? wishlistIds.has(quickViewProduct.id) : false}
-        onToggleWishlist={handleToggleWishlist}
-      />
+              {/* 8. Community Reels / Watch & Shop */}
+              <ReelsShowcase
+                reels={REELS_DATA}
+                products={PRODUCTS}
+                onAddToCart={(prod, size) => handleAddToCart(prod, size)}
+                onQuickView={(prod) => setQuickViewProduct(prod)}
+              />
 
-      {/* 14. Real-time Search Modal */}
-      <SearchModal
-        isOpen={isSearchOpen}
-        onClose={() => setIsSearchOpen(false)}
-        products={PRODUCTS}
-        onSelectProduct={(prod) => {
-          handleNavigateToProduct(prod);
-        }}
-      />
-    </div>
+              {/* 9. Brand Story Wave Banner */}
+              <BrandStoryBanner />
+            </>
+          )}
+        </main>
+
+        {/* 10. Comprehensive Footer */}
+        <Footer
+          onNavigateToPolicy={handleNavigateToPolicy}
+          onNavigateToEssentials={handleNavigateToEssentials}
+          onNavigateToAbout={handleNavigateToAbout}
+          onNavigateToContact={handleNavigateToContact}
+          onSelectCategory={(cat) => {
+            setSelectedCategory(cat);
+            if (currentView !== 'home') handleNavigateToHome();
+            const el = document.getElementById('products-gallery');
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+          }}
+        />
+
+        {/* 11. Slide-Over Cart Drawer */}
+        <CartDrawer
+          isOpen={isCartDrawerOpen}
+          onClose={() => setIsCartDrawerOpen(false)}
+          items={cartItems}
+          onUpdateQuantity={handleUpdateQuantity}
+          onRemoveItem={handleRemoveItem}
+          onProceedToCheckout={handleNavigateToCheckout}
+          appliedCoupon={appliedCoupon}
+          onApplyCoupon={handleApplyCoupon}
+          onRemoveCoupon={handleRemoveCoupon}
+          discountAmount={discountAmount}
+        />
+
+        {/* 12. Quick View Modal */}
+        <QuickViewModal
+          product={quickViewProduct}
+          onClose={() => setQuickViewProduct(null)}
+          onAddToCart={handleAddToCart}
+          onOpenProductPage={(slug) => handleNavigateToProduct(slug)}
+          isWishlisted={quickViewProduct ? wishlistIds.has(quickViewProduct.id) : false}
+          onToggleWishlist={handleToggleWishlist}
+        />
+
+        {/* 13. Real-time Search Modal */}
+        <SearchModal
+          isOpen={isSearchOpen}
+          onClose={() => setIsSearchOpen(false)}
+          products={PRODUCTS}
+          onSelectProduct={(prod) => {
+            handleNavigateToProduct(prod);
+          }}
+        />
+
+        {/* 14. Firebase & MySQL User Auth Modal */}
+        <AuthModal
+          isOpen={isAuthModalOpen}
+          onClose={() => setIsAuthModalOpen(false)}
+        />
+      </div>
+    </AuthProvider>
   );
 }
