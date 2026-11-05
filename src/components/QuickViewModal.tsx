@@ -44,8 +44,14 @@ export const QuickViewModal: React.FC<QuickViewModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/75 backdrop-blur-sm p-4 sm:p-6 flex items-center justify-center animate-in fade-in">
-      <div className="relative w-full max-w-3xl bg-[#fbf7f0] rounded-3xl shadow-2xl border border-[#e4d6c0] overflow-hidden my-8">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-50 overflow-y-auto bg-black/75 backdrop-blur-sm p-4 sm:p-6 flex items-center justify-center animate-in fade-in cursor-pointer"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-3xl bg-[#fbf7f0] rounded-3xl shadow-2xl border border-[#e4d6c0] overflow-hidden my-8 cursor-default"
+      >
         <button
           onClick={onClose}
           className="absolute top-4 right-4 z-10 p-2 rounded-full bg-white/80 hover:bg-white text-[#574938] hover:text-[#1a221b] transition-colors shadow-sm cursor-pointer"

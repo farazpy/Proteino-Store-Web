@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Search, X, ArrowRight, Star } from 'lucide-react';
 import { Product } from '../types/store';
 
@@ -17,6 +17,19 @@ export const SearchModal: React.FC<SearchModalProps> = ({
 }) => {
   const [query, setQuery] = useState('');
 
+  // Close on Escape key press
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    if (isOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   const searchResults = useMemo(() => {
     if (!query.trim()) return [];
     const q = query.toLowerCase();
@@ -34,8 +47,14 @@ export const SearchModal: React.FC<SearchModalProps> = ({
   const popularSearches = ['Cold Coffee', 'Masala Oats', 'Peanut Butter', 'Super Bar', 'Thandai'];
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/70 backdrop-blur-sm p-4 sm:p-6 flex items-start justify-center pt-20 animate-in fade-in">
-      <div className="relative w-full max-w-2xl bg-[#fbf7f0] rounded-3xl shadow-2xl border border-[#e4d6c0] overflow-hidden">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-50 overflow-y-auto bg-black/70 backdrop-blur-sm p-4 sm:p-6 flex items-start justify-center pt-20 animate-in fade-in cursor-pointer"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-2xl bg-[#fbf7f0] rounded-3xl shadow-2xl border border-[#e4d6c0] overflow-hidden cursor-default"
+      >
         {/* Search Input Bar */}
         <div className="p-4 sm:p-5 bg-white border-b border-[#e5d8c3] flex items-center gap-3">
           <Search className="w-5 h-5 text-[#00632d] shrink-0" />
