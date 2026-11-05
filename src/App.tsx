@@ -26,7 +26,7 @@ import { PRODUCTS, REELS_DATA, createProductSlug, getProductBySlug } from './dat
 import { Product, CartItem, OrderDetails } from './types/store';
 
 // Instruction 1: Increment frontend version number in header after every change/update
-const FRONTEND_VERSION = 'v1.4.7';
+const FRONTEND_VERSION = 'v1.4.8';
 
 export default function App() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');

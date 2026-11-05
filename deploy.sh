@@ -19,9 +19,13 @@ git stash || true
 git fetch origin main
 git reset --hard origin/main
 
+# Avoid permission errors (EACCES) between root and web user (e.g. www / UID 1001)
+export npm_config_cache="/tmp/.npm-cache-$(id -u)"
+mkdir -p "$npm_config_cache" 2>/dev/null || true
+
 # Install dependencies
-echo "--> Installing dependencies..."
-npm install
+echo "--> Installing dependencies (using cache $npm_config_cache)..."
+npm install --cache "$npm_config_cache"
 
 # Build client and server
 echo "--> Running build (npm run build)..."
