@@ -65,42 +65,26 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
     setQuantity(1);
   }, [product.id, product.image]);
 
-  // Customer Reviews state (allows users to add real-time reviews)
-  const [reviews, setReviews] = useState([
-    {
-      id: 'rev-1',
-      name: 'Kunal Mukherjee',
-      rating: 5,
-      date: 'October 28, 2026',
-      verified: true,
-      title: 'Best Cold Coffee Protein in India!',
-      comment:
-        'I was skeptical about peanut protein, but Theproteino nailed the flavor! Tastes like a rich iced frappe with zero gritty aftertaste. 26g protein per scoop keeps me energized through long gym sessions.',
-      helpfulCount: 24,
-    },
-    {
-      id: 'rev-2',
-      name: 'Priya Sharma',
-      rating: 5,
-      date: 'October 22, 2026',
-      verified: true,
-      title: 'Zero palm oil, authentic roasted crunch',
-      comment:
-        'Cleanest ingredient profile on the market. Finally a peanut butter that doesn’t hide behind hydrogenated oils or excess sugar. My whole family loves it on morning sourdough.',
-      helpfulCount: 18,
-    },
-    {
-      id: 'rev-3',
-      name: 'Dr. Devansh Roy',
-      rating: 4,
-      date: 'October 15, 2026',
-      verified: true,
-      title: 'Great macros & natural digestibility',
-      comment:
-        'As a sports nutritionist, I look closely at the digestive enzyme blend and amino acid profile. Excellent bioavailability and easy on the gut.',
-      helpfulCount: 12,
-    },
-  ]);
+  // Customer Reviews state (fetched from MySQL)
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [reviewsLoading, setReviewsLoading] = useState(true);
+
+  React.useEffect(() => {
+    const fetchReviews = async () => {
+      setReviewsLoading(true);
+      try {
+        const res = await fetch(`/api/products/${product.id}/reviews`);
+        const data = await res.json();
+        setReviews(data);
+      } catch (err) {
+        console.error('Error fetching reviews:', err);
+      } finally {
+        setReviewsLoading(false);
+      }
+    };
+    fetchReviews();
+  }, [product.id]);
+
 
   // Review Form state
   const [showReviewForm, setShowReviewForm] = useState(false);
@@ -844,45 +828,44 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
 
           {/* Review List */}
           <div className="divide-y divide-[#ece2cf] mt-6">
-            {reviews.map((rev) => (
-              <div key={rev.id} className="py-5 space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-sm text-[#1a221b]">{rev.name}</span>
-                    {rev.verified && (
+            {reviewsLoading ? (
+              <div className="py-10 text-center text-xs text-[#8a7a66]">Loading reviews...</div>
+            ) : reviews.length === 0 ? (
+              <div className="py-10 text-center text-xs text-[#8a7a66]">No reviews yet. Be the first to review!</div>
+            ) : (
+              reviews.map((rev) => (
+                <div key={rev.id} className="py-5 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-sm text-[#1a221b]">{rev.userName}</span>
                       <span className="text-[10px] font-bold bg-[#e8f5e9] text-[#00632d] px-2 py-0.5 rounded-full">
                         Verified Buyer ✓
                       </span>
-                    )}
+                    </div>
+                    <span className="text-xs text-[#8a7c68]">{rev.date}</span>
                   </div>
-                  <span className="text-xs text-[#8a7c68]">{rev.date}</span>
-                </div>
 
-                <div className="flex items-center gap-2">
-                  <div className="flex text-[#ffc400]">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`w-3.5 h-3.5 ${
-                          i < rev.rating ? 'fill-[#ffc400]' : 'text-[#dfd2be]'
-                        }`}
-                      />
-                    ))}
+                  <div className="flex items-center gap-2">
+                    <div className="flex text-[#ffc400]">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`w-3.5 h-3.5 ${
+                            i < rev.rating ? 'fill-[#ffc400]' : 'text-[#dfd2be]'
+                          }`}
+                        />
+                      ))}
+                    </div>
                   </div>
-                  <span className="font-bold text-xs text-[#1a221b]">{rev.title}</span>
-                </div>
 
-                <p className="text-xs text-[#524433] leading-relaxed">{rev.comment}</p>
-
-                <div className="flex items-center gap-2 text-[11px] text-[#8a7c68] pt-1">
-                  <button className="flex items-center gap-1 hover:text-[#00632d] transition-colors cursor-pointer">
-                    <ThumbsUp className="w-3.5 h-3.5" />
-                    <span>Helpful ({rev.helpfulCount})</span>
-                  </button>
+                  <p className="text-sm text-[#5a5043] leading-relaxed italic">
+                    "{rev.comment}"
+                  </p>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
+
         </div>
       </div>
 

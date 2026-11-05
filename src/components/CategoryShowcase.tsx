@@ -3,56 +3,15 @@ import React from 'react';
 interface CategoryShowcaseProps {
   selectedCategory: string;
   onSelectCategory: (cat: string) => void;
+  categories: any[];
 }
 
 export const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({
   selectedCategory,
   onSelectCategory,
+  categories: dynamicCategories,
 }) => {
-  const categories = [
-    {
-      id: 'Protein Powder',
-      name: 'Protein Powder',
-      image: 'https://images.unsplash.com/photo-1579722821273-0f6c7d44362f?auto=format&fit=crop&w=300&q=80',
-      badge: '26g Protein',
-      bgTone: 'bg-[#faf3e8]',
-    },
-    {
-      id: 'Protein Oats',
-      name: 'Protein Oats',
-      image: 'https://images.unsplash.com/photo-1586444248902-2f64eddc13df?auto=format&fit=crop&w=300&q=80',
-      badge: '27g Protein',
-      bgTone: 'bg-[#f4ecdf]',
-    },
-    {
-      id: 'Masala Oats',
-      name: 'Masala Oats',
-      image: 'https://images.unsplash.com/photo-1517673132405-a56a62b18caf?auto=format&fit=crop&w=300&q=80',
-      badge: '2 Min Meal',
-      bgTone: 'bg-[#fbf1e4]',
-    },
-    {
-      id: 'Peanut Butter',
-      name: 'Peanut Butter',
-      image: 'https://images.unsplash.com/photo-1588791174744-7e9bf4378277?auto=format&fit=crop&w=300&q=80',
-      badge: '100% Peanuts',
-      bgTone: 'bg-[#faefe1]',
-    },
-    {
-      id: 'Super Bar',
-      name: 'Super Bar',
-      image: '/images/super-bar-card.png',
-      badge: '15g Clean Fuel',
-      bgTone: 'bg-[#f3ebe1]',
-    },
-    {
-      id: 'Super Muesli',
-      name: 'Super Muesli',
-      image: 'https://images.unsplash.com/photo-1517456793572-1d8efd6dc135?auto=format&fit=crop&w=300&q=80',
-      badge: '40% Nuts & Berries',
-      bgTone: 'bg-[#f8f1ea]',
-    },
-  ];
+  const categories = dynamicCategories.filter(c => c.id !== 'all');
 
   return (
     <section className="py-12 md:py-16 bg-[#fcf5eb] border-b border-[#e9dcce]">

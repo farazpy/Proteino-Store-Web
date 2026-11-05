@@ -122,7 +122,10 @@ export const Header: React.FC<HeaderProps> = ({
             {/* 2. Shop with Mega Menu Dropdown Trigger */}
             <div
               className="relative"
-              onMouseEnter={() => setMegaMenuOpen(true)}
+              onMouseEnter={() => {
+                setMegaMenuOpen(true);
+                setCategoryDropdownOpen(false);
+              }}
             >
               <button
                 onClick={() => setMegaMenuOpen(!megaMenuOpen)}
@@ -139,7 +142,10 @@ export const Header: React.FC<HeaderProps> = ({
             {/* 3. Categories Dropdown */}
             <div
               className="relative"
-              onMouseEnter={() => setCategoryDropdownOpen(true)}
+              onMouseEnter={() => {
+                setCategoryDropdownOpen(true);
+                setMegaMenuOpen(false);
+              }}
             >
               <button
                 onClick={() => setCategoryDropdownOpen(!categoryDropdownOpen)}
