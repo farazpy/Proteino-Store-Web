@@ -2,20 +2,28 @@ import express from 'express';
 import dotenv from 'dotenv';
 import { createServer as createViteServer } from 'vite';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { testConnection } from './src/db/mysql.ts';
 
 dotenv.config();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const PORT = process.env.PORT || 3000;
+// Port 3000 is required by AI Studio preview iframe constraint
+const PORT = 3000;
 const IS_DEV = process.env.NODE_ENV !== 'production';
 
 async function startServer() {
   const app = express();
 
-  // Test MySQL connection on startup
-  await testConnection();
+  // Test MySQL connection on startup (non-blocking)
+  testConnection().then(isConnected => {
+    if (!isConnected) {
+      console.error('\x1b[31m[DATABASE ERROR]\x1b[0m: Connection test result:', isConnected);
+    } else {
+      console.log('\x1b[32m[DATABASE CONNECTED]\x1b[0m: Successfully connected to MySQL database.');
+    }
+  });
 
   // Middleware
   app.use(express.json());
@@ -42,7 +50,9 @@ async function startServer() {
     app.use('*', async (req, res, next) => {
       const url = req.originalUrl;
       try {
-        let template = await vite.transformIndexHtml(url, '');
+        const indexPath = path.resolve(__dirname, 'index.html');
+        const rawHtml = fs.readFileSync(indexPath, 'utf-8');
+        let template = await vite.transformIndexHtml(url, rawHtml);
         res.status(200).set({ 'Content-Type': 'text/html' }).end(template);
       } catch (e) {
         vite.ssrFixStacktrace(e as Error);

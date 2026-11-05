@@ -41,7 +41,7 @@ export const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({
     {
       id: 'Super Bar',
       name: 'Super Bar',
-      image: 'https://images.unsplash.com/photo-1622484216835-156372c3d596?auto=format&fit=crop&w=300&q=80',
+      image: '/images/super-bar-card.png',
       badge: '15g Clean Fuel',
       bgTone: 'bg-[#f3ebe1]',
     },

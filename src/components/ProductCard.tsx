@@ -54,6 +54,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           src={product.image}
           alt={product.name}
           referrerPolicy="no-referrer"
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = '/images/super-bar-card.png';
+          }}
           className="h-full w-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
         />
 

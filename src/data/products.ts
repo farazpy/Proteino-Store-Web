@@ -222,7 +222,8 @@ export const PRODUCTS: Product[] = [
     discountPercent: 14,
     rating: 4.8,
     reviewCount: 260,
-    image: 'https://images.unsplash.com/photo-1622484216835-156372c3d596?auto=format&fit=crop&w=800&q=80',
+    image: '/images/super-bar-card.png',
+    secondaryImage: '/images/super-bar-card.png',
     badge: 'ENERGY PACK',
     variants: [
       { size: 'Box of 6 Bars (6 x 50g)', price: 599, originalPrice: 700 },

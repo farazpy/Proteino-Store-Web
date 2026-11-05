@@ -58,6 +58,13 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
     'overview'
   );
 
+  React.useEffect(() => {
+    setSelectedVariant(product.variants[0]);
+    setSelectedFlavor(product.flavors ? product.flavors[0] : undefined);
+    setActiveImage(product.image);
+    setQuantity(1);
+  }, [product.id, product.image]);
+
   // Customer Reviews state (allows users to add real-time reviews)
   const [reviews, setReviews] = useState([
     {
