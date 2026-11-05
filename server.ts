@@ -9,11 +9,13 @@ import { testConnection } from './src/db/mysql.ts';
 dotenv.config();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-// Port 3000 in dev for AI Studio preview iframe; process.env.PORT (e.g. 3002) in production on VPS
-const PORT = process.env.NODE_ENV === 'production'
-  ? (process.env.PORT ? parseInt(process.env.PORT, 10) : 3000)
-  : 3000;
-const IS_DEV = process.env.NODE_ENV !== 'production';
+// Prioritize PORT from .env (e.g. 3002 on VPS); default to 3000 for local/preview
+const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
+const NODE_ENV = process.env.NODE_ENV || 'development';
+const IS_DEV = NODE_ENV !== 'production';
+
+console.log(`\x1b[36m[SERVER STARTUP]\x1b[0m: Environment: ${NODE_ENV}`);
+console.log(`\x1b[36m[SERVER STARTUP]\x1b[0m: Port configured: ${PORT}`);
 
 async function startServer() {
   const app = express();

@@ -42,8 +42,11 @@ async function testConnection() {
 // server.ts
 dotenv2.config();
 var __dirname = path.dirname(fileURLToPath(import.meta.url));
-var PORT = process.env.NODE_ENV === "production" ? process.env.PORT ? parseInt(process.env.PORT, 10) : 3e3 : 3e3;
-var IS_DEV = process.env.NODE_ENV !== "production";
+var PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3e3;
+var NODE_ENV = process.env.NODE_ENV || "development";
+var IS_DEV = NODE_ENV !== "production";
+console.log(`\x1B[36m[SERVER STARTUP]\x1B[0m: Environment: ${NODE_ENV}`);
+console.log(`\x1B[36m[SERVER STARTUP]\x1B[0m: Port configured: ${PORT}`);
 async function startServer() {
   const app = express();
   testConnection().then((isConnected) => {
