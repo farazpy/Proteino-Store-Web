@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import { useStoreData } from '../context/StoreDataContext';
 
 export const LiveCounterBanner: React.FC = () => {
-  const [soldCount, setSoldCount] = useState(345653);
+  const { settings } = useStoreData();
+  const live = settings.liveCounter;
+  const [soldCount, setSoldCount] = useState(live.baseSoldCount || 345653);
+
+  useEffect(() => {
+    setSoldCount(live.baseSoldCount || 345653);
+  }, [live.baseSoldCount]);
 
   // Realistic periodic increment
   useEffect(() => {
@@ -14,17 +21,16 @@ export const LiveCounterBanner: React.FC = () => {
   return (
     <section className="py-16 md:py-20 bg-[#a6aff4] border-y border-[#919cf0] relative overflow-hidden text-[#00632d]">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-        {/* Header from reference image_9d57883d.png */}
         <h2 className="font-display text-2xl sm:text-3xl md:text-5xl font-bold tracking-tight uppercase leading-tight mb-10 max-w-4xl mx-auto text-[#004d23]">
-          P.S WHILE YOU WERE READING THIS<br />
-          WE SOLD ABOUT 200 PB JARS
+          {live.headlineLine1}
+          <br />
+          {live.headlineLine2}
         </h2>
 
         {/* 3 Main Stat Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-16">
-          {/* Stat 1: Live Products Sold (Deep Green Card) */}
+          {/* Stat 1: Live Products Sold */}
           <div className="relative bg-[#00632d] text-white rounded-[2rem] p-6 shadow-xl border-2 border-[#004d23] flex flex-col items-center justify-center min-h-[140px] transform hover:scale-105 transition-transform">
-            {/* Live Indicator Pill */}
             <div className="absolute -top-3.5 bg-[#8ee000] text-[#004d23] text-xs font-black px-4 py-1 rounded-full uppercase tracking-wider shadow-sm flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-[#004d23] animate-ping" />
               <span>Live</span>
@@ -34,57 +40,50 @@ export const LiveCounterBanner: React.FC = () => {
               {soldCount.toLocaleString()}+
             </div>
             <div className="text-xs sm:text-sm font-bold text-white/90 mt-1">
-              Products sold
+              {live.stat1Label}
             </div>
           </div>
 
-          {/* Stat 2: Happy Tastebuds (Bordered Card) */}
+          {/* Stat 2: Happy Tastebuds */}
           <div className="bg-transparent border-2 border-[#004d23] rounded-[2rem] p-6 flex flex-col items-center justify-center min-h-[140px] transform hover:scale-105 transition-transform">
             <div className="font-display text-4xl sm:text-5xl font-black text-[#004d23] tracking-tight">
-              34M+
+              {live.stat2Value}
             </div>
             <div className="text-xs sm:text-sm font-bold text-[#14361e] mt-1">
-              Happy tastebuds
+              {live.stat2Label}
             </div>
           </div>
 
-          {/* Stat 3: Countries Sold (Bordered Card) */}
+          {/* Stat 3: Countries Sold */}
           <div className="bg-transparent border-2 border-[#004d23] rounded-[2rem] p-6 flex flex-col items-center justify-center min-h-[140px] transform hover:scale-105 transition-transform">
             <div className="font-display text-4xl sm:text-5xl font-black text-[#004d23] tracking-tight">
-              21*
+              {live.stat3Value}
             </div>
             <div className="text-xs sm:text-sm font-bold text-[#14361e] mt-1">
-              Countries sold
+              {live.stat3Label}
             </div>
           </div>
         </div>
 
-        {/* Floating Nutrition Chips / Badges from image_9d57883d.png */}
+        {/* Floating Nutrition Chips / Badges */}
         <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 pt-4">
-          {/* Blue Heart: NO CHOLESTEROL */}
-          <div className="bg-[#1e88e5] text-white px-5 py-2.5 rounded-full font-display font-black text-xs sm:text-sm tracking-wider uppercase shadow-md -rotate-6 hover:rotate-0 transition-transform">
-            💙 NO CHOLESTEROL
-          </div>
-
-          {/* Red/Orange Teardrop: NO TRANS FAT */}
-          <div className="bg-white text-[#d84315] border-2 border-[#d84315] px-5 py-2.5 rounded-full font-display font-black text-xs sm:text-sm tracking-wider uppercase shadow-md rotate-3 hover:rotate-0 transition-transform">
-            🔥 NO TRANS FAT
-          </div>
-
-          {/* Peanut Shape: HEALTHY FATS */}
-          <div className="bg-[#d4974f] text-[#3e2723] px-6 py-2.5 rounded-full font-display font-black text-xs sm:text-sm tracking-wider uppercase shadow-md -rotate-2 hover:rotate-0 transition-transform">
-            🥜 HEALTHY FATS
-          </div>
-
-          {/* Green Starburst: GLUTEN FREE */}
-          <div className="bg-[#00632d] text-white px-6 py-2.5 rounded-full font-display font-black text-xs sm:text-sm tracking-wider uppercase shadow-md rotate-4 hover:rotate-0 transition-transform">
-            🌾 GLUTEN FREE
-          </div>
-
-          {/* Light Green: NON GMO */}
-          <div className="bg-[#8ee000] text-[#004d23] px-5 py-2.5 rounded-full font-display font-black text-xs sm:text-sm tracking-wider uppercase shadow-md -rotate-3 hover:rotate-0 transition-transform">
-            🌱 NON GMO
-          </div>
+          {(live.badges || []).map((badge, i) => {
+            const styles = [
+              'bg-[#1e88e5] text-white -rotate-6',
+              'bg-white text-[#d84315] border-2 border-[#d84315] rotate-3',
+              'bg-[#d4974f] text-[#3e2723] -rotate-2',
+              'bg-[#00632d] text-white rotate-4',
+              'bg-[#8ee000] text-[#004d23] -rotate-3',
+            ];
+            return (
+              <div
+                key={i}
+                className={`${styles[i % styles.length]} px-5 py-2.5 rounded-full font-display font-black text-xs sm:text-sm tracking-wider uppercase shadow-md hover:rotate-0 transition-transform`}
+              >
+                {badge}
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>

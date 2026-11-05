@@ -14,9 +14,23 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onGoHome }) => {
   const [message, setMessage] = useState('');
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [submittedTicketCode, setSubmittedTicketCode] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !email.trim() || !message.trim()) return;
+
+    try {
+      const res = await fetch('/api/contact/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, phone, orderId, subject, message }),
+      });
+      const data = await res.json();
+      setSubmittedTicketCode(data.ticketCode || `SUP-${Math.floor(1000 + Math.random() * 9000)}`);
+    } catch {
+      setSubmittedTicketCode(`SUP-${Math.floor(1000 + Math.random() * 9000)}`);
+    }
 
     setSubmitted(true);
     setTimeout(() => {
@@ -26,8 +40,9 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onGoHome }) => {
       setOrderId('');
       setMessage('');
       setSubmitted(false);
-    }, 4000);
+    }, 5000);
   };
+
 
   return (
     <div className="bg-[#fbf7f0] min-h-screen pb-20">

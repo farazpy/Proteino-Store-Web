@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { ArrowLeft, ShoppingBag, ShieldCheck, Check, Sparkles, Star, Gift, Truck } from 'lucide-react';
+import { ArrowLeft, ShoppingBag, Check, Sparkles } from 'lucide-react';
 import { Product } from '../types/store';
+import { useStoreData } from '../context/StoreDataContext';
+
 
 interface StoreEssentialsPageProps {
   onAddToCart: (product: Product, selectedSize: string) => void;
@@ -141,9 +143,40 @@ export const ESSENTIALS_PRODUCTS: Product[] = [
 export const StoreEssentialsPage: React.FC<StoreEssentialsPageProps> = ({
   onAddToCart,
   onGoHome,
-  onNavigateToProduct,
 }) => {
+  const { bundles } = useStoreData();
   const [addedId, setAddedId] = useState<string | null>(null);
+
+  const displayProducts: Product[] =
+    bundles && bundles.length > 0
+      ? bundles.map((b) => ({
+          id: b.id,
+          name: b.name,
+          tagline: b.tagline,
+          category: b.category,
+          price: b.price,
+          originalPrice: b.originalPrice,
+          discountPercent: b.discountPercent,
+          rating: b.rating,
+          reviewCount: b.reviewCount,
+          image: b.image,
+          badge: b.badge,
+          isBestseller: true,
+          variants: [{ size: 'Standard Bundle', price: b.price, originalPrice: b.originalPrice }],
+          nutrition: {
+            protein: '26g-30g',
+            calories: '158 kcal',
+            carbs: '6g',
+            fat: '3.1g',
+            sugar: '0g Added',
+            servingSize: '1 Kit',
+          },
+          features: b.features || [],
+          ingredients: '100% Clean Label Essentials.',
+          description: b.tagline,
+          inStock: b.inStock,
+        }))
+      : ESSENTIALS_PRODUCTS;
 
   const handleAdd = (product: Product) => {
     onAddToCart(product, product.variants[0].size);
@@ -181,7 +214,7 @@ export const StoreEssentialsPage: React.FC<StoreEssentialsPageProps> = ({
       {/* Essentials Products Grid */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 md:gap-8">
-          {ESSENTIALS_PRODUCTS.map((prod) => {
+          {displayProducts.map((prod) => {
             const isAdded = addedId === prod.id;
             return (
               <div
@@ -201,6 +234,7 @@ export const StoreEssentialsPage: React.FC<StoreEssentialsPageProps> = ({
                         {prod.badge}
                       </span>
                     )}
+
                     {prod.discountPercent > 0 && (
                       <span className="absolute top-2 right-2 sm:top-3 sm:right-3 bg-[#d90429] text-white text-[8px] sm:text-[10px] font-extrabold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-md shadow uppercase">
                         {prod.discountPercent}% OFF

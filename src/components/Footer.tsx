@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { PolicySlug } from './PolicyPages';
+import { useStoreData } from '../context/StoreDataContext';
 
 interface FooterProps {
   onNavigateToPolicy?: (slug: PolicySlug) => void;
   onNavigateToEssentials?: () => void;
   onNavigateToAbout?: () => void;
   onNavigateToContact?: () => void;
+  onNavigateToAdmin?: () => void;
   onSelectCategory?: (cat: string) => void;
 }
 
@@ -14,14 +16,25 @@ export const Footer: React.FC<FooterProps> = ({
   onNavigateToEssentials,
   onNavigateToAbout,
   onNavigateToContact,
+  onNavigateToAdmin,
   onSelectCategory,
 }) => {
+  const { settings } = useStoreData();
+  const fc = settings.footerConfig;
+  const st = settings.shippingAndTax;
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim()) return;
+    try {
+      await fetch('/api/newsletter/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+    } catch {}
     setSubscribed(true);
     setTimeout(() => {
       setEmail('');
@@ -44,7 +57,7 @@ export const Footer: React.FC<FooterProps> = ({
               </span>
             </div>
             <p className="text-xs sm:text-sm text-[#a3b8aa] leading-relaxed max-w-sm mb-6">
-              India's cleanest peanut nutrition brand. Slow-roasted in small batches in Saurashtra, Gujarat. Zero palm oil, zero synthetic emulsifiers, and zero refined sugar.
+              {fc.brandBio}
             </p>
 
             <div className="flex flex-wrap items-center gap-2 text-[11px] text-[#8ea896]">
@@ -52,19 +65,19 @@ export const Footer: React.FC<FooterProps> = ({
                 onClick={() => onNavigateToPolicy && onNavigateToPolicy('quality-certifications')}
                 className="px-2.5 py-1 rounded bg-[#243528] hover:bg-[#324a38] border border-[#344b3a] transition-colors cursor-pointer"
               >
-                ✓ FSSAI Lic. 10020021005821
+                {fc.cert1}
               </button>
               <button
                 onClick={() => onNavigateToPolicy && onNavigateToPolicy('quality-certifications')}
                 className="px-2.5 py-1 rounded bg-[#243528] hover:bg-[#324a38] border border-[#344b3a] transition-colors cursor-pointer"
               >
-                ✓ Labdoor Tested
+                {fc.cert2}
               </button>
               <button
                 onClick={() => onNavigateToPolicy && onNavigateToPolicy('quality-certifications')}
                 className="px-2.5 py-1 rounded bg-[#243528] hover:bg-[#324a38] border border-[#344b3a] transition-colors cursor-pointer"
               >
-                ✓ ISO 22000 Certified
+                {fc.cert3}
               </button>
             </div>
           </div>
@@ -155,10 +168,10 @@ export const Footer: React.FC<FooterProps> = ({
                 </button>
               </li>
               <li>
-                <span className="text-[#a3b8aa]">Contact: support@theproteino.com</span>
+                <span className="text-[#a3b8aa]">Contact: {st.supportEmail}</span>
               </li>
               <li>
-                <span className="text-[#a3b8aa]">WhatsApp: +91 98765 43210</span>
+                <span className="text-[#a3b8aa]">WhatsApp: {st.supportPhone}</span>
               </li>
             </ul>
           </div>
@@ -166,10 +179,10 @@ export const Footer: React.FC<FooterProps> = ({
           {/* Newsletter Form */}
           <div>
             <h4 className="font-display text-xs font-bold uppercase tracking-wider text-[#8ee000] mb-4">
-              Get 15% Off First Order
+              {fc.newsletterHeading}
             </h4>
             <p className="text-xs text-[#a3b8aa] mb-3">
-              Join 100,000+ fitness lovers for weekly recipe drops and secret discounts.
+              {fc.newsletterSubtext}
             </p>
             <form onSubmit={handleSubscribe} className="space-y-2">
               <div className="relative">
@@ -195,7 +208,7 @@ export const Footer: React.FC<FooterProps> = ({
         {/* Bottom bar */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-[#7d9484] gap-4">
           <div>
-            © {new Date().getFullYear()} Theproteino India Pvt. Ltd. All rights reserved.
+            © {new Date().getFullYear()} {fc.copyrightText}
           </div>
           <div className="flex flex-wrap items-center gap-3 text-[11px]">
             <button
@@ -225,6 +238,17 @@ export const Footer: React.FC<FooterProps> = ({
             >
               Shipping Policy
             </button>
+            {onNavigateToAdmin && (
+              <>
+                <span>·</span>
+                <button
+                  onClick={onNavigateToAdmin}
+                  className="hover:underline text-[#8ee000] font-semibold transition-colors cursor-pointer"
+                >
+                  Admin Panel (/admin)
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>

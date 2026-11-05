@@ -33,21 +33,30 @@ export const QuickViewModal: React.FC<QuickViewModalProps> = ({
   const [reviewsLoading, setReviewsLoading] = useState(false);
 
   React.useEffect(() => {
+    let isMounted = true;
     if (activeTab === 'reviews' && product) {
       const fetchReviews = async () => {
         setReviewsLoading(true);
         try {
           const res = await fetch(`/api/products/${product.id}/reviews`);
-          const data = await res.json();
-          setReviews(data);
+          if (res.ok) {
+            const contentType = res.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+              const data = await res.json();
+              if (isMounted) setReviews(Array.isArray(data) ? data : []);
+            }
+          }
         } catch (err) {
-          console.error('Error fetching reviews:', err);
+          console.warn('Reviews fetch notice in QuickViewModal:', err);
         } finally {
-          setReviewsLoading(false);
+          if (isMounted) setReviewsLoading(false);
         }
       };
       fetchReviews();
     }
+    return () => {
+      isMounted = false;
+    };
   }, [activeTab, product?.id]);
 
   const slug = createProductSlug(product.name);

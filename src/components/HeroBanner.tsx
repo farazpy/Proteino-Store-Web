@@ -1,11 +1,15 @@
 import React from 'react';
 import { ArrowRight, ShieldCheck, Zap, HeartHandshake, Award } from 'lucide-react';
+import { useStoreData } from '../context/StoreDataContext';
 
 interface HeroBannerProps {
   onShopNow: () => void;
 }
 
 export const HeroBanner: React.FC<HeroBannerProps> = ({ onShopNow }) => {
+  const { settings } = useStoreData();
+  const hero = settings.hero;
+
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-[#f7efdf] via-[#faefe1] to-[#fbf7f0] pt-10 pb-16 md:pt-14 md:pb-20 border-b border-[#ebdcc7]">
       {/* Subtle organic background blobs */}
@@ -17,35 +21,33 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ onShopNow }) => {
           {/* Left Column: Bold Headline & Value Proposition */}
           <div className="lg:col-span-7 flex flex-col justify-center text-left">
             {/* Top kicker */}
-            <div className="flex items-center gap-2 text-xs font-bold tracking-widest uppercase text-[#00632d] mb-3">
-              <span>Roasted In Small Batches</span>
+            <div className="flex items-center gap-2 text-xs font-bold tracking-widest uppercase text-[#00632d] mb-3 flex-wrap">
+              <span>{hero.kicker1}</span>
               <span aria-hidden="true">·</span>
-              <span>100% Clean Label</span>
+              <span>{hero.kicker2}</span>
               <span aria-hidden="true">·</span>
-              <span>Zero Palm Oil</span>
+              <span>{hero.kicker3}</span>
             </div>
 
             <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-bold text-[#14361e] leading-[1.08] tracking-tight mb-5 text-balance">
-              FUEL YOUR DAY WITH{' '}
+              {hero.headlinePrefix}{' '}
               <span className="text-[#00632d] underline decoration-[#8ee000] decoration-wavy decoration-2">
-                100% ROASTED PEANUT
+                {hero.headlineHighlight}
               </span>{' '}
-              POWER
+              {hero.headlineSuffix}
             </h1>
 
             <p className="text-base sm:text-lg text-[#524636] leading-relaxed mb-8 max-w-2xl font-normal">
-              Indulge in slow-milled peanut butter, 26g cold brew protein powders,
-              and 2-minute savory masala oats. Crafted with AAA bold-grade peanuts
-              and pure whey isolate. Absolutely no refined sugars or trans fats.
+              {hero.subheadline}
             </p>
 
             {/* CTAs */}
             <div className="flex flex-wrap items-center gap-4 mb-10">
               <button
                 onClick={onShopNow}
-                className="bg-[#00632d] hover:bg-[#004d23] text-white font-bold px-7 py-3.5 rounded-xl text-base shadow-md hover:shadow-lg transition-all flex items-center gap-2 active:scale-95 group"
+                className="bg-[#00632d] hover:bg-[#004d23] text-white font-bold px-7 py-3.5 rounded-xl text-base shadow-md hover:shadow-lg transition-all flex items-center gap-2 active:scale-95 group cursor-pointer"
               >
-                <span>Shop Best Sellers</span>
+                <span>{hero.primaryCtaText}</span>
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
 
@@ -53,7 +55,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ onShopNow }) => {
                 href="#comparison-matrix"
                 className="bg-white/80 hover:bg-white text-[#00632d] font-bold px-6 py-3.5 rounded-xl text-base border border-[#d2c5b0] hover:border-[#00632d] transition-all shadow-sm"
               >
-                Theproteino vs. The Rest
+                {hero.secondaryCtaText}
               </a>
             </div>
 
@@ -64,8 +66,8 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ onShopNow }) => {
                   <Zap className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="text-xs font-bold text-[#1a221b]">Up to 30g</div>
-                  <div className="text-[11px] text-[#6b5f4d]">High Protein</div>
+                  <div className="text-xs font-bold text-[#1a221b]">{hero.stat1Title}</div>
+                  <div className="text-[11px] text-[#6b5f4d]">{hero.stat1Sub}</div>
                 </div>
               </div>
 
@@ -74,8 +76,8 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ onShopNow }) => {
                   <ShieldCheck className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="text-xs font-bold text-[#1a221b]">0% Palm Oil</div>
-                  <div className="text-[11px] text-[#6b5f4d]">Zero Trans Fats</div>
+                  <div className="text-xs font-bold text-[#1a221b]">{hero.stat2Title}</div>
+                  <div className="text-[11px] text-[#6b5f4d]">{hero.stat2Sub}</div>
                 </div>
               </div>
 
@@ -84,8 +86,8 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ onShopNow }) => {
                   <Award className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="text-xs font-bold text-[#1a221b]">Labdoor Tested</div>
-                  <div className="text-[11px] text-[#6b5f4d]">100% Verified</div>
+                  <div className="text-xs font-bold text-[#1a221b]">{hero.stat3Title}</div>
+                  <div className="text-[11px] text-[#6b5f4d]">{hero.stat3Sub}</div>
                 </div>
               </div>
 
@@ -94,8 +96,8 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ onShopNow }) => {
                   <HeartHandshake className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="text-xs font-bold text-[#1a221b]">10M+ Happy</div>
-                  <div className="text-[11px] text-[#6b5f4d]">Fitness Lovers</div>
+                  <div className="text-xs font-bold text-[#1a221b]">{hero.stat4Title}</div>
+                  <div className="text-[11px] text-[#6b5f4d]">{hero.stat4Sub}</div>
                 </div>
               </div>
             </div>
@@ -108,43 +110,43 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ onShopNow }) => {
               <div className="relative rounded-3xl bg-white p-4 shadow-xl border border-[#e8ddcb] overflow-hidden">
                 <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-[#faf3e8]">
                   <img
-                    src="https://images.unsplash.com/photo-1579722821273-0f6c7d44362f?auto=format&fit=crop&w=900&q=80"
-                    alt="Theproteino Supernatural Peanut Protein Cold Coffee"
+                    src={hero.highlightImage}
+                    alt={hero.highlightTitle}
                     referrerPolicy="no-referrer"
                     className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute top-3 left-3 bg-[#e63946] text-white text-[11px] font-extrabold px-3 py-1 rounded-md shadow-sm">
-                    24% OFF + FREE SHAKER
+                    {hero.highlightBadge}
                   </div>
                 </div>
 
                 <div className="pt-4 px-2">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-xs font-bold uppercase tracking-wider text-[#00632d]">
-                      Top Rated Blend
+                      {hero.highlightCategory}
                     </span>
                     <span className="text-xs font-semibold text-[#8a7a63]">
-                      ★ 4.9 (342 reviews)
+                      {hero.highlightRating}
                     </span>
                   </div>
                   <h3 className="font-display text-xl font-bold text-[#1a221b] mb-1">
-                    Supernatural Cold Coffee Protein
+                    {hero.highlightTitle}
                   </h3>
                   <p className="text-xs text-[#6e614e] mb-3">
-                    26g Protein · Real Arabica Beans · 0g Added Sugar
+                    {hero.highlightSubtitle}
                   </p>
                   <div className="flex items-center justify-between pt-2 border-t border-[#f0e7d8]">
                     <div className="flex items-baseline gap-2">
                       <span className="text-xl font-bold text-[#00632d] font-mono tabular-nums">
-                        ₹2,199
+                        ₹{hero.highlightPrice.toLocaleString()}
                       </span>
                       <span className="text-xs text-[#9d8d77] line-through font-mono tabular-nums">
-                        ₹2,899
+                        ₹{hero.highlightOriginalPrice.toLocaleString()}
                       </span>
                     </div>
                     <button
                       onClick={onShopNow}
-                      className="px-4 py-2 bg-[#00632d] text-white text-xs font-bold rounded-lg hover:bg-[#004d23] transition-colors"
+                      className="px-4 py-2 bg-[#00632d] text-white text-xs font-bold rounded-lg hover:bg-[#004d23] transition-colors cursor-pointer"
                     >
                       Quick Add
                     </button>
@@ -159,10 +161,10 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ onShopNow }) => {
                 </div>
                 <div className="text-left">
                   <div className="text-xs font-bold text-[#1a221b]">
-                    "Tastes like a cafe frappe!"
+                    {hero.floatingQuote}
                   </div>
                   <div className="text-[11px] text-[#7d6f5c]">
-                    — Rohit S., Certified Trainer
+                    {hero.floatingAuthor}
                   </div>
                 </div>
               </div>

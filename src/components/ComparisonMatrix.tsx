@@ -1,46 +1,9 @@
 import React from 'react';
-import { Check, X, Sparkles } from 'lucide-react';
+import { X, Sparkles } from 'lucide-react';
+import { useStoreData } from '../context/StoreDataContext';
 
 export const ComparisonMatrix: React.FC = () => {
-  const comparisonRows = [
-    {
-      metric: 'Cost',
-      gharKaKhaana: "Mom's Sanity",
-      theproteino: 'Moderate & Pocket Friendly',
-      junkFood: 'Too High A Price',
-    },
-    {
-      metric: 'Time',
-      gharKaKhaana: '20 Mins Prep',
-      theproteino: '2 Minutes Instant',
-      junkFood: 'Instant (Just Like The Regret)',
-    },
-    {
-      metric: 'Taste',
-      gharKaKhaana: 'Homestyle Delicious',
-      theproteino: 'Chocolatey & Roasted Crunch',
-      junkFood: 'Honestly Good, But Ask Yourself Roz Khaoge?',
-    },
-    {
-      metric: 'Nutrition Value',
-      gharKaKhaana: 'High Whole Food',
-      theproteino: 'Very High (Calibrated Macros)',
-      junkFood: 'Very Low Empty Calories',
-    },
-    {
-      metric: 'Ingredients',
-      gharKaKhaana: '100% Natural',
-      theproteino: '100% Natural (Zero Palm Oil)',
-      junkFood: 'Not At All Safe (Preservatives)',
-    },
-    {
-      metric: 'Protein Intake',
-      gharKaKhaana: 'Hard To Track But Moderate',
-      theproteino: '26g - 30g Certified Protein',
-      junkFood: 'Zero Protein (Pure Sugar/Fat)',
-      theproteinoHighlight: true,
-    },
-  ];
+  const { comparisonRows } = useStoreData();
 
   return (
     <section id="comparison-matrix" className="py-16 md:py-24 bg-gradient-to-b from-[#e3f0e8] via-[#d6ebd9] to-[#dff0e4] border-b border-[#c8dfce] relative overflow-hidden">

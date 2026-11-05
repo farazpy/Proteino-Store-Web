@@ -70,19 +70,28 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
   const [reviewsLoading, setReviewsLoading] = useState(true);
 
   React.useEffect(() => {
+    let isMounted = true;
     const fetchReviews = async () => {
       setReviewsLoading(true);
       try {
         const res = await fetch(`/api/products/${product.id}/reviews`);
-        const data = await res.json();
-        setReviews(data);
+        if (res.ok) {
+          const contentType = res.headers.get('content-type');
+          if (contentType && contentType.includes('application/json')) {
+            const data = await res.json();
+            if (isMounted) setReviews(Array.isArray(data) ? data : []);
+          }
+        }
       } catch (err) {
-        console.error('Error fetching reviews:', err);
+        console.warn('Reviews fetch fallback to default reviews:', err);
       } finally {
-        setReviewsLoading(false);
+        if (isMounted) setReviewsLoading(false);
       }
     };
     fetchReviews();
+    return () => {
+      isMounted = false;
+    };
   }, [product.id]);
 
 
@@ -119,13 +128,14 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
     setTimeout(() => setIsAdding(false), 1200);
   };
 
-  const handleReviewSubmit = (e: React.FormEvent) => {
+  const handleReviewSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newName.trim() || !newComment.trim()) return;
 
     const createdReview = {
       id: `rev-${Date.now()}`,
       name: newName,
+      userName: newName,
       rating: newRating,
       date: 'Today',
       verified: true,
@@ -136,6 +146,20 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
 
     setReviews([createdReview, ...reviews]);
     setReviewSubmitted(true);
+
+    try {
+      await fetch('/api/reviews/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          productId: product.id,
+          userName: newName,
+          rating: newRating,
+          comment: newComment,
+        }),
+      });
+    } catch {}
+
     setTimeout(() => {
       setShowReviewForm(false);
       setReviewSubmitted(false);
