@@ -180,16 +180,16 @@ export const StoreEssentialsPage: React.FC<StoreEssentialsPageProps> = ({
 
       {/* Essentials Products Grid */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 md:gap-8">
           {ESSENTIALS_PRODUCTS.map((prod) => {
             const isAdded = addedId === prod.id;
             return (
               <div
                 key={prod.id}
-                className="bg-white rounded-3xl border border-[#e4d6c0] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between p-5"
+                className="bg-white rounded-2xl sm:rounded-3xl border border-[#e4d6c0] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between p-2.5 sm:p-5"
               >
                 <div>
-                  <div className="relative aspect-square rounded-2xl overflow-hidden bg-[#faf4ea] mb-4 border border-[#eee4d5]">
+                  <div className="relative aspect-square rounded-xl sm:rounded-2xl overflow-hidden bg-[#faf4ea] mb-3 sm:mb-4 border border-[#eee4d5]">
                     <img
                       src={prod.image}
                       alt={prod.name}
@@ -197,34 +197,34 @@ export const StoreEssentialsPage: React.FC<StoreEssentialsPageProps> = ({
                       className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500"
                     />
                     {prod.badge && (
-                      <span className="absolute top-3 left-3 bg-[#00632d] text-white text-[10px] font-extrabold px-2.5 py-1 rounded-md shadow uppercase">
+                      <span className="absolute top-2 left-2 sm:top-3 sm:left-3 bg-[#00632d] text-white text-[8px] sm:text-[10px] font-extrabold px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-md shadow uppercase">
                         {prod.badge}
                       </span>
                     )}
                     {prod.discountPercent > 0 && (
-                      <span className="absolute top-3 right-3 bg-[#d90429] text-white text-[10px] font-extrabold px-2 py-1 rounded-md shadow uppercase">
+                      <span className="absolute top-2 right-2 sm:top-3 sm:right-3 bg-[#d90429] text-white text-[8px] sm:text-[10px] font-extrabold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-md shadow uppercase">
                         {prod.discountPercent}% OFF
                       </span>
                     )}
                   </div>
 
-                  <div className="flex items-center gap-1 text-[#ffc400] text-xs font-bold mb-1">
+                  <div className="flex items-center gap-1 text-[#ffc400] text-[10px] sm:text-xs font-bold mb-1">
                     <span>★ {prod.rating}</span>
-                    <span className="text-[#8c7e6c]">({prod.reviewCount} reviews)</span>
+                    <span className="text-[#8c7e6c]">({prod.reviewCount})</span>
                   </div>
 
-                  <h3 className="font-display text-base font-bold text-[#1a221b] mb-1 line-clamp-2">
+                  <h3 className="font-display text-xs sm:text-base font-bold text-[#1a221b] mb-1 line-clamp-2 leading-snug">
                     {prod.name}
                   </h3>
 
-                  <p className="text-xs text-[#786b59] line-clamp-2 mb-3">
+                  <p className="text-[10px] sm:text-xs text-[#786b59] line-clamp-1 mb-2 sm:mb-3">
                     {prod.tagline}
                   </p>
 
-                  <ul className="text-[11px] text-[#554737] space-y-1 mb-4 bg-[#faf5ec] p-3 rounded-xl border border-[#eae0ce]">
+                  <ul className="text-[10px] sm:text-[11px] text-[#554737] space-y-1 mb-3 sm:mb-4 bg-[#faf5ec] p-2 sm:p-3 rounded-xl border border-[#eae0ce]">
                     {prod.features.slice(0, 2).map((feat, i) => (
                       <li key={i} className="flex items-center gap-1.5">
-                        <Check className="w-3.5 h-3.5 text-[#00632d] shrink-0" />
+                        <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#00632d] shrink-0" />
                         <span className="truncate">{feat}</span>
                       </li>
                     ))}

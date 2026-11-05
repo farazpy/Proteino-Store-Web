@@ -68,7 +68,7 @@ export const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({
         </div>
 
         {/* Circular Categories Grid matching visual design in attachment */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6 md:gap-8 justify-items-center">
+        <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-6 md:gap-8 justify-items-center">
           {categories.map((cat) => {
             const isSelected = selectedCategory === cat.id;
             return (
@@ -85,12 +85,12 @@ export const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({
               >
                 {/* Circular dish wrapper */}
                 <div
-                  className={`relative w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full p-2.5 transition-all shadow-md group-hover:shadow-xl ${
+                  className={`relative w-20 h-20 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full p-1.5 sm:p-2.5 transition-all shadow-md group-hover:shadow-xl ${
                     cat.bgTone
                   } ${
                     isSelected
-                      ? 'ring-4 ring-[#00632d] ring-offset-2 shadow-lg'
-                      : 'border-2 border-[#e3d5c2] group-hover:border-[#00632d]'
+                      ? 'ring-2 sm:ring-4 ring-[#00632d] ring-offset-1 sm:ring-offset-2 shadow-lg'
+                      : 'border border-[#e3d5c2] sm:border-2 group-hover:border-[#00632d]'
                   }`}
                 >
                   <div className="w-full h-full rounded-full overflow-hidden bg-white shadow-inner">
@@ -103,14 +103,14 @@ export const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({
                   </div>
 
                   {/* Subtle Badge */}
-                  <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-[#00632d] text-white text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap shadow-sm">
+                  <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-[#00632d] text-white text-[8px] sm:text-[10px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-0.5 rounded-full whitespace-nowrap shadow-sm max-w-[90%] truncate">
                     {cat.badge}
                   </div>
                 </div>
 
                 {/* Category Label */}
                 <span
-                  className={`mt-4 font-display text-base sm:text-lg font-bold tracking-tight transition-colors ${
+                  className={`mt-2 sm:mt-4 font-display text-xs sm:text-lg font-bold tracking-tight transition-colors line-clamp-1 ${
                     isSelected ? 'text-[#00632d]' : 'text-[#2b2417] group-hover:text-[#00632d]'
                   }`}
                 >
