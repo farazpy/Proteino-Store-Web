@@ -80,6 +80,32 @@ async function startServer() {
     });
   });
 
+  // Show all categories from mysql database in json
+  app.get('/api/categories', async (req, res) => {
+    try {
+      const conn = await pool.getConnection();
+      const [rows]: any = await conn.query('SELECT * FROM product_categories');
+      conn.release();
+      res.json(rows);
+    } catch (err: any) {
+      console.error('[API CATEGORIES ERROR]:', err?.message || err);
+      res.status(500).json({ error: 'Database query failed' });
+    }
+  });
+
+  // Show all products with their category id and all details
+  app.get('/api/products', async (req, res) => {
+    try {
+      const conn = await pool.getConnection();
+      const [rows]: any = await conn.query('SELECT * FROM products');
+      conn.release();
+      res.json(rows);
+    } catch (err: any) {
+      console.error('[API PRODUCTS ERROR]:', err?.message || err);
+      res.status(500).json({ error: 'Database query failed' });
+    }
+  });
+
   // 1. Sync Firebase User into MySQL database
   app.post('/api/user/sync', async (req, res) => {
     const { firebaseUid, email, displayName, photoUrl, phone, provider } = req.body;

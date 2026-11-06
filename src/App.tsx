@@ -28,7 +28,7 @@ import { createProductSlug } from './data/products';
 import { Product, CartItem, OrderDetails } from './types/store';
 
 // Instruction 1: Increment frontend version number in header after every change/update
-const FRONTEND_VERSION = 'v1.6.3';
+const FRONTEND_VERSION = 'v1.6.4';
 
 function StorefrontApp() {
   const { products, categories, reels, coupons, settings } = useStoreData();
